@@ -1,9 +1,12 @@
 "use client";
 
+import { FlaskConical, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { openDraft, regenerateDraft, saveDraft, sendDraftAction } from "@/app/actions/drafts";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +21,8 @@ export function DraftPanel(props: {
   draft: Draft | null;
   emailMode: "redirect" | "live" | null;
   hasEmail: boolean;
+  candidateEmail: string | null;
+  testInbox: string | null;
 }) {
   const { candidateId, role, draft } = props;
   const router = useRouter();
@@ -25,6 +30,7 @@ export function DraftPanel(props: {
   const [subject, setSubject] = useState(draft?.subject ?? "");
   const [body, setBody] = useState(draft?.body ?? "");
   const [message, setMessage] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const requested = useRef(false);
 
   // Generated lazily, the first time this role's detail is opened.
@@ -46,10 +52,10 @@ export function DraftPanel(props: {
       setMessage(null);
       try {
         await action();
-        setMessage(label);
+        toast.success(label);
         router.refresh();
       } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Something went wrong.");
+        toast.error(error instanceof Error ? error.message : "Something went wrong.");
       }
     });
 
@@ -64,6 +70,12 @@ export function DraftPanel(props: {
   const sent = draft.status === "sent";
   const edited = subject !== draft.subject || body !== draft.body;
   const otherKind = draft.kind === "invite" ? "rejection" : "invite";
+  const live = props.emailMode === "live";
+  const sendNow = () =>
+    run(`Email sent to ${live ? props.candidateEmail : (props.testInbox ?? "the test inbox")}`, async () => {
+      const outcome = await sendDraftAction(candidateId, draft.id);
+      if (outcome.status !== "sent") throw new Error(outcome.detail ?? "Not sent");
+    });
 
   return (
     <>
@@ -136,18 +148,27 @@ export function DraftPanel(props: {
             <Textarea id="body" rows={12} value={body} disabled={sent} onChange={(event) => setBody(event.target.value)} />
           </div>
         </div>
+        {!sent && props.emailMode && (
+          <p
+            className={
+              live
+                ? "mt-3 inline-flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-100 px-2 py-1 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+                : "mt-3 inline-flex items-center gap-1.5 rounded-md border border-sky-300 bg-sky-100 px-2 py-1 text-xs text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-200"
+            }
+          >
+            {live ? <Mail className="size-3.5 shrink-0" aria-hidden /> : <FlaskConical className="size-3.5 shrink-0" aria-hidden />}
+            {live
+              ? `Live: this goes to the candidate (${props.candidateEmail ?? "no address"})`
+              : `Test mode: this goes to ${props.testInbox ?? "the test inbox"}, not to the candidate`}
+          </p>
+        )}
         {!sent && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button
               disabled={pending || edited || !props.hasEmail || !props.emailMode || draft.status === "needs_manual_edit"}
-              onClick={() =>
-                run("Sent.", async () => {
-                  const outcome = await sendDraftAction(candidateId, draft.id);
-                  if (outcome.status !== "sent") throw new Error(outcome.detail ?? "Not sent");
-                })
-              }
+              onClick={() => (live ? setConfirmOpen(true) : sendNow())}
             >
-              {pending ? "Working…" : "Send"}
+              {pending ? "Working…" : live ? "Send" : "Send to test inbox"}
             </Button>
             <Button
               variant="outline"
@@ -169,17 +190,33 @@ export function DraftPanel(props: {
           </div>
         )}
         <p className="mt-2 text-xs text-muted-foreground">
-          {!props.hasEmail
-            ? "Add an email address to send."
-            : props.emailMode === "redirect"
-              ? "Redirect mode: the email goes to the test inbox, with the candidate's address in the subject."
-              : props.emailMode === "live"
-                ? "Live mode: the email goes to the candidate."
-                : "Email is not configured (EMAIL_MODE)."}
-          {edited ? " Save your edits before sending." : ""}
+          {!props.hasEmail ? "Add an email address to send. " : ""}
+          {!props.emailMode ? "Email is not configured (EMAIL_MODE). " : ""}
+          {edited ? "Save your edits before sending." : ""}
         </p>
-        {message && <p className="mt-1 text-sm">{message}</p>}
       </section>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send this email to {props.candidateEmail}?</DialogTitle>
+            <DialogDescription>It is sent immediately and cannot be recalled.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setConfirmOpen(false);
+                sendNow();
+              }}
+            >
+              Send now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

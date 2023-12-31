@@ -96,7 +96,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         ))}
       </nav>
 
-      <section aria-label="Cohort insights" className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="flex flex-col">
+      <section aria-label="Cohort insights" className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:order-6">
         <div className="rounded-lg border p-4">
           <p className="text-xs font-medium text-muted-foreground uppercase">Tiers</p>
           <ul className="mt-2 space-y-1 text-sm">
@@ -153,22 +154,37 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </div>
       </section>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-6 space-y-2">
         <p className="text-sm text-muted-foreground">
           {filtered ? `${rows.length} of ${all} candidates` : `${all} candidates`}, ranked for {ROLE_LABEL[role]}
         </p>
-        <div className="flex flex-wrap gap-1.5 text-sm">
+        <div className="flex flex-wrap items-center gap-1.5 text-sm">
+          {TIERS.map((value) => (
+            <Link
+              key={value}
+              href={href(role, { ...active, tier: tier === value ? undefined : value })}
+              aria-current={tier === value ? "true" : undefined}
+              className={cn(
+                "inline-flex min-h-9 items-center gap-1.5 rounded-md border px-2.5",
+                tier === value && "bg-muted font-medium",
+              )}
+            >
+              {value}
+              <span className="tabular-nums text-muted-foreground">{cohort.tiers[value]}</span>
+            </Link>
+          ))}
+          <span aria-hidden className="mx-1 hidden h-5 w-px bg-border sm:block" />
           {(["pm", "spm"] as RoleKey[]).map((key) => (
             <Link
               key={key}
-              href={href(role, { ...(tier ? { tier } : {}), applied: key })}
-              className={cn("rounded-md border px-2 py-1", applied === key && "bg-muted font-medium")}
+              href={href(role, { ...active, applied: applied === key ? undefined : key })}
+              className={cn("inline-flex min-h-9 items-center rounded-md border px-2.5", applied === key && "bg-muted font-medium")}
             >
               Applied {ROLE_LABEL[key]}
             </Link>
           ))}
           {filtered && (
-            <Link href={href(role, {})} className="rounded-md border px-2 py-1">
+            <Link href={href(role, {})} className="inline-flex min-h-9 items-center rounded-md px-2.5 text-muted-foreground underline">
               Clear filters
             </Link>
           )}
@@ -185,7 +201,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
       {rows.length === 0 && <p className="mt-6 text-sm text-muted-foreground">No candidates match.</p>}
 
-      <ProcessingList pending={pending} />
+      <div className="max-md:order-5">
+        <ProcessingList pending={pending} />
+      </div>
+      </div>
     </main>
   );
 }
