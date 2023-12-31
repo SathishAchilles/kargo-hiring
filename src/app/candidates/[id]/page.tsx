@@ -1,0 +1,190 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { TierBadge } from "@/components/tier-badge";
+import { loadCandidate } from "@/lib/dashboard/queries";
+import { emailMode } from "@/lib/email/send";
+import { parseRole } from "@/lib/intake/validate";
+import { RUBRICS } from "@/lib/scoring/rubric";
+import { isProductRole } from "@/lib/scoring/years";
+import { ROLE_LABEL, type RoleKey } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { DetailsForm } from "./details-form";
+import { DraftPanel } from "./draft-panel";
+import { RetryButton } from "./retry-button";
+import { SettingsForm } from "./settings-form";
+
+export const dynamic = "force-dynamic";
+
+const FLAG_TITLE: Record<string, string> = {
+  duplicate: "Duplicate CV",
+  placeholder: "Unfilled placeholder",
+  identity_mismatch: "Profile link name differs",
+  education_overlap: "Job during a full-time degree",
+  stated_vs_dated: "Stated vs dated experience",
+};
+
+export default async function CandidatePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { id } = await params;
+  const search = await searchParams;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
+  const view = await loadCandidate(id);
+  if (!view) notFound();
+  const { candidate, pii, evidence, scores, flags, drafts } = view;
+  const role: RoleKey = parseRole(Array.isArray(search.role) ? search.role[0] : search.role) ?? candidate.appliedRole;
+  const score = scores[role];
+  const mode = (() => {
+    try {
+      return emailMode();
+    } catch {
+      return null;
+    }
+  })();
+
+  return (
+    <main className="mx-auto max-w-5xl px-4 py-6 md:px-6">
+      <Link href={`/?role=${role}`} className="text-sm text-muted-foreground hover:underline">
+        ← {ROLE_LABEL[role]} ranking
+      </Link>
+
+      <header className="mt-3 flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold tracking-tight break-words">{pii?.name ?? candidate.fileName}</h1>
+          <p className="mt-1 text-sm break-all text-muted-foreground">
+            {pii?.emails[0] ?? "no email found"} · {pii?.phones[0] ? `+91 ${pii.phones[0]}` : "no phone found"} ·{" "}
+            <a className="hover:underline" href={`/api/candidates/${id}/file`} target="_blank" rel="noreferrer">
+              View CV
+            </a>
+          </p>
+        </div>
+        <div className="flex gap-3">
+          {(["pm", "spm"] as RoleKey[]).map((key) =>
+            scores[key] ? (
+              <Link
+                key={key}
+                href={`/candidates/${id}?role=${key}`}
+                className={cn("rounded-lg border px-4 py-2 text-center", key === role && "border-foreground")}
+              >
+                <div className="text-xs text-muted-foreground">{ROLE_LABEL[key]}</div>
+                <div className="text-xl font-semibold tabular-nums">{scores[key]?.total}</div>
+                <TierBadge tier={scores[key]!.tier} />
+              </Link>
+            ) : null,
+          )}
+        </div>
+      </header>
+
+      {candidate.status !== "ready" && (
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-800 dark:bg-amber-950">
+          <span>
+            Status: {candidate.status.replace("_", " ")}
+            {candidate.statusReason ? ` — ${candidate.statusReason}` : ""}
+          </span>
+          {candidate.status === "failed" && <RetryButton id={id} />}
+        </div>
+      )}
+
+      <section className="mt-6 grid gap-4 md:grid-cols-2">
+        <SettingsForm id={id} appliedRole={candidate.appliedRole} asOfDate={candidate.asOfDate} />
+        <DetailsForm id={id} name={pii?.name ?? ""} email={pii?.emails[0] ?? ""} phone={pii?.phones[0] ?? ""} />
+      </section>
+
+      {score && (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold">Why {score.total} for {ROLE_LABEL[role]}</h2>
+          <p className="text-sm text-muted-foreground">
+            Product {score.productYears.toFixed(1)} yrs · Total {score.totalYears.toFixed(1)} yrs · suggested role:{" "}
+            {score.suggestedRole.replace("_", " ").replace("pm or spm", "PM or Senior PM")}
+            {score.suggestOther ? " (differs from the applied role)" : ""}
+          </p>
+          <ol className="mt-4 space-y-3">
+            {score.subScores.map((item) => {
+              const criterion = RUBRICS[role].find((c) => c.id === item.criterion);
+              return (
+                <li key={item.criterion} className="rounded-lg border p-4">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="font-medium">
+                      {item.criterion} {criterion?.name}{" "}
+                      <span className="text-sm font-normal text-muted-foreground">
+                        · weight {Math.round((criterion?.weight ?? 0) * 100)}%
+                      </span>
+                    </p>
+                    <span className="text-lg font-semibold tabular-nums">{item.score}/5</span>
+                  </div>
+                  <p className="mt-1 text-sm">{item.anchor}</p>
+                  {item.quotes.length > 0 && (
+                    <ul className="mt-2 space-y-1 border-l-2 pl-3 text-sm text-muted-foreground">
+                      {item.quotes.map((quote, index) => (
+                        <li key={index}>“{quote}”</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      )}
+
+      {evidence && (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold">Roles counted</h2>
+          <ul className="mt-3 divide-y rounded-lg border text-sm">
+            {evidence.roles.map((item, index) => (
+              <li key={index} className="flex flex-wrap justify-between gap-2 px-3 py-2">
+                <span>
+                  {item.title}
+                  {item.company ? ` · ${item.company}` : ""}
+                </span>
+                <span className="text-muted-foreground">
+                  {item.start} – {item.end} ·{" "}
+                  {item.internship ? "internship (not counted)" : isProductRole(item) ? "product" : item.roleType}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">Integrity flags</h2>
+        {flags.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">None. Flags never change scores.</p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {flags.map((flag) => (
+              <li key={flag.id} className="rounded-lg border border-rose-300 p-3 text-sm dark:border-rose-800">
+                <p className="font-medium">{FLAG_TITLE[flag.type]}</p>
+                {flag.relatedName && flag.relatedCandidateId && (
+                  <p className="mt-0.5">
+                    Same CV as{" "}
+                    <Link className="underline" href={`/candidates/${flag.relatedCandidateId}?role=${role}`}>
+                      {flag.relatedName}
+                    </Link>
+                  </p>
+                )}
+                <p className="mt-1 text-muted-foreground">Ask: {flag.question}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {score && (
+        <DraftPanel
+          key={`${role}-${drafts[role]?.id ?? "none"}`}
+          candidateId={id}
+          role={role}
+          draft={drafts[role]}
+          emailMode={mode}
+          hasEmail={Boolean(pii?.emails[0])}
+        />
+      )}
+    </main>
+  );
+}
