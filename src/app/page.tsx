@@ -13,12 +13,11 @@ import { loadDashboard, type Filters } from "@/lib/dashboard/queries";
 import { parseSort, SORT_KEYS } from "@/lib/dashboard/sort";
 import { parseRole } from "@/lib/intake/validate";
 import { RUBRICS } from "@/lib/scoring/rubric";
-import { ROLE_LABEL, type FlagType, type RoleKey, type Tier } from "@/lib/types";
+import { ROLE_LABEL, TIER_LABEL, TIERS, type FlagType, type RoleKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const TIERS: Tier[] = ["Shortlist", "Interview", "Hold", "Decline"];
 type Search = Record<string, string | string[] | undefined>;
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
@@ -124,7 +123,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 tier === value && "bg-muted font-medium",
               )}
             >
-              {value}
+              {TIER_LABEL[value]}
               <span className="tabular-nums text-muted-foreground">{cohort.tiers[value]}</span>
             </Link>
           ))}

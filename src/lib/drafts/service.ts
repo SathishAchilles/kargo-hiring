@@ -3,6 +3,7 @@ import { db } from "@/db/client";
 import { candidatePii, drafts, evidence, flags as flagsTable, scores } from "@/db/schema";
 import { emailMode, fromAddress, route, sender } from "@/lib/email/send";
 import { loadPii } from "@/lib/pipeline/steps";
+import { tierFor } from "@/lib/scoring/score";
 import type { DraftKind, RoleKey } from "@/lib/types";
 import { defaultKind } from "./brief";
 import { generateDraft } from "./generate";
@@ -38,7 +39,7 @@ export async function ensureDraft(
 
   const generated = await generateDraft({
     role,
-    kind: options.kind ?? existing?.kind ?? defaultKind(score.tier),
+    kind: options.kind ?? existing?.kind ?? defaultKind(tierFor(score.total)),
     pii,
     evidence: ev.record,
     subScores: score.subScores,

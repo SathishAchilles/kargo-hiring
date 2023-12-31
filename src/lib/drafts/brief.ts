@@ -9,7 +9,7 @@ export const KILL_QUESTION = "Tell me about something you shipped and then kille
 export type FlagSummary = { type: FlagType; detail: Record<string, unknown> };
 
 export function defaultKind(tier: Tier): DraftKind {
-  return tier === "Shortlist" || tier === "Interview" ? "invite" : "rejection";
+  return tier === "Strong" || tier === "Good" ? "invite" : "rejection";
 }
 
 const criterionName = (role: RoleKey, id: string) =>

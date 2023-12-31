@@ -12,7 +12,18 @@ export type CandidateStatus =
   | "needs_ocr"
   | "failed";
 
-export type Tier = "Shortlist" | "Interview" | "Hold" | "Decline";
+// The AI's recommendation band for a total. Shortlisting itself is the founder's decision, so these
+// are deliberately not worded as actions.
+export type Tier = "Strong" | "Good" | "Partial" | "Weak";
+
+export const TIERS: Tier[] = ["Strong", "Good", "Partial", "Weak"];
+
+export const TIER_LABEL: Record<Tier, string> = {
+  Strong: "Strong match",
+  Good: "Good match",
+  Partial: "Partial match",
+  Weak: "Weak match",
+};
 
 export type SuggestedRole = "below_band" | "pm" | "pm_or_spm" | "spm";
 

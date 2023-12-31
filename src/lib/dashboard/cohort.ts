@@ -41,7 +41,7 @@ const average = (values: number[]) =>
   values.length ? Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10 : null;
 
 export function cohortFor(rows: CohortRow[], role: RoleKey): Cohort {
-  const tiers: Record<Tier, number> = { Shortlist: 0, Interview: 0, Hold: 0, Decline: 0 };
+  const tiers: Record<Tier, number> = { Strong: 0, Good: 0, Partial: 0, Weak: 0 };
   for (const row of rows) tiers[row.tier] += 1;
 
   const topTotal = rows.length ? Math.max(...rows.map((row) => row.total)) : null;

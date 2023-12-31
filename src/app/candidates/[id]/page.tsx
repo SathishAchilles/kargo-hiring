@@ -10,6 +10,7 @@ import { loadCandidate, neighbours } from "@/lib/dashboard/queries";
 import { emailMode } from "@/lib/email/send";
 import { parseRole } from "@/lib/intake/validate";
 import { RUBRICS } from "@/lib/scoring/rubric";
+import { tierFor } from "@/lib/scoring/score";
 import { isProductRole } from "@/lib/scoring/years";
 import { ROLE_LABEL, type RoleKey, type Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,12 @@ import { SettingsForm } from "./settings-form";
 
 export const dynamic = "force-dynamic";
 
-// What the tier means for the founder; it matches the email the page drafts by default.
+// What the AI recommends for each band. It is a recommendation: the founder decides.
 const NEXT_STEP: Record<Tier, { title: string; text: string }> = {
-  Shortlist: { title: "Invite to interview", text: "A strong match for this role. A draft invite is ready below." },
-  Interview: { title: "Worth a conversation", text: "A good match with gaps to probe. The brief lists what to ask." },
-  Hold: { title: "Hold", text: "A partial match. Keep for later, or send a respectful decline." },
-  Decline: { title: "Decline", text: "Not enough of a match for this role right now." },
+  Strong: { title: "Recommends shortlisting", text: "A strong match for this role. If you shortlist, a draft invite is ready below." },
+  Good: { title: "Recommends a conversation", text: "A good match with gaps to probe. The brief lists what to ask." },
+  Partial: { title: "Recommends holding", text: "A partial match. Keep for later, or decline respectfully." },
+  Weak: { title: "Recommends declining", text: "Not enough of a match for this role right now." },
 };
 
 const FLAG_TITLE: Record<string, string> = {
@@ -90,7 +91,7 @@ export default async function CandidatePage({
               >
                 <div className="text-xs text-muted-foreground">{ROLE_LABEL[key]}</div>
                 <div className="text-xl font-semibold tabular-nums">{scores[key]?.total}</div>
-                <TierBadge tier={scores[key]!.tier} />
+                <TierBadge tier={tierFor(scores[key]!.total)} />
               </Link>
             ) : null,
           )}
@@ -158,10 +159,10 @@ export default async function CandidatePage({
             <div className="min-w-0 flex-1 text-center sm:text-left">
               <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Suggested next step</p>
               <p className="mt-1 flex items-center justify-center gap-2 text-xl font-semibold tracking-tight sm:justify-start">
-                {NEXT_STEP[score.tier].title}
-                <TierBadge tier={score.tier} />
+                {NEXT_STEP[tierFor(score.total)].title}
+                <TierBadge tier={tierFor(score.total)} />
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">{NEXT_STEP[score.tier].text}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{NEXT_STEP[tierFor(score.total)].text}</p>
               <p className="mt-3 text-sm text-muted-foreground tabular-nums">
                 Product {score.productYears.toFixed(1)} yrs · Total {score.totalYears.toFixed(1)} yrs · suggested role:{" "}
                 {score.suggestedRole.replace("_", " ").replace("pm or spm", "PM or Senior PM")}

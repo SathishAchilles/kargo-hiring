@@ -64,7 +64,7 @@ describe("cohort panel", () => {
   const row = (id: string, total: number, sub: number[], extra: Partial<CohortRow> = {}): CohortRow => ({
     id,
     total,
-    tier: total >= 80 ? "Shortlist" : total >= 65 ? "Interview" : total >= 50 ? "Hold" : "Decline",
+    tier: total >= 80 ? "Strong" : total >= 65 ? "Good" : total >= 50 ? "Partial" : "Weak",
     appliedRole: "pm",
     subScores: scores(sub),
     suggestOther: false,
@@ -84,7 +84,7 @@ describe("cohort panel", () => {
     expect(cohort.tiedAtTop).toBe(4);
     expect(cohort.topTotal).toBe(100);
     expect(cohort.scarcest).toEqual({ criterion: "P1", fives: 4 });
-    expect(cohort.tiers).toEqual({ Shortlist: 4, Interview: 0, Hold: 1, Decline: 0 });
+    expect(cohort.tiers).toEqual({ Strong: 4, Good: 0, Partial: 1, Weak: 0 });
     expect(cohort.averageApplicants).toBe(100);
     expect(cohort.suggestOther).toBe(1);
     expect(cohort.flags).toEqual({ duplicate: 1 });
@@ -124,7 +124,7 @@ describe("score histogram", () => {
   });
 
   it("is carried on the cohort", () => {
-    const row = { id: "a", total: 100, tier: "Shortlist" as const, appliedRole: "pm" as const, subScores: [], suggestOther: false, flagTypes: [] };
+    const row = { id: "a", total: 100, tier: "Strong" as const, appliedRole: "pm" as const, subScores: [], suggestOther: false, flagTypes: [] };
     expect(cohortFor([row], "pm").histogram.at(-1)?.count).toBe(1);
   });
 });

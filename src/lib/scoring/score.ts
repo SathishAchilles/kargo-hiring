@@ -21,10 +21,10 @@ export type CandidateScores = {
 };
 
 export function tierFor(total: number): Tier {
-  if (total >= 80) return "Shortlist";
-  if (total >= 65) return "Interview";
-  if (total >= 50) return "Hold";
-  return "Decline";
+  if (total >= 80) return "Strong";
+  if (total >= 65) return "Good";
+  if (total >= 50) return "Partial";
+  return "Weak";
 }
 
 export function suggestedRoleFor(years: number): SuggestedRole {
