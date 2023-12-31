@@ -10,11 +10,12 @@ import type { RoleKey } from "@/lib/types";
 const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
 
-// "3 of 50", previous and next, and ← → keys, so the ranking can be reviewed in order.
-export function CandidateNav({ neighbours, role }: { neighbours: Neighbours; role: RoleKey }) {
+// "3 of 50", previous and next, and ← → keys, so the ranking can be reviewed in order. Each
+// candidate opens in the role they applied for; `from` only keeps the ranking they came from.
+export function CandidateNav({ neighbours, from }: { neighbours: Neighbours; from: RoleKey }) {
   const router = useRouter();
   const nav = useRef<HTMLElement>(null);
-  const href = (id: string) => `/candidates/${id}?role=${role}`;
+  const href = (id: string) => `/candidates/${id}?from=${from}`;
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -30,7 +31,7 @@ export function CandidateNav({ neighbours, role }: { neighbours: Neighbours; rol
       element?.removeAttribute("data-keys");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [neighbours.prev?.id, neighbours.next?.id, role, router]);
+  }, [neighbours.prev?.id, neighbours.next?.id, from, router]);
 
   const base = "inline-flex min-h-8 items-center gap-0.5 rounded-md border px-2 text-xs";
   return (

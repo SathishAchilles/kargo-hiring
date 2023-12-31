@@ -15,3 +15,6 @@ export async function hasData(page: Page): Promise<boolean> {
 }
 
 export const NEEDS_DATA = "needs the demo data: npm run data:restore -- demo --yes";
+
+// Candidates now open in the role they applied for, so tests that assert on "for PM" pick a PM applicant.
+export const APPLIED_PM = /Applied PM/;

@@ -5,6 +5,8 @@ import { emailMode, fromAddress, route, sender } from "@/lib/email/send";
 import { loadPii } from "@/lib/pipeline/steps";
 import { tierFor } from "@/lib/scoring/score";
 import type { DraftKind, RoleKey } from "@/lib/types";
+import { getDecision } from "@/lib/candidates/decisions";
+import { kindFor, sendBlock } from "@/lib/decisions";
 import { defaultKind } from "./brief";
 import { generateDraft } from "./generate";
 
@@ -36,10 +38,12 @@ export async function ensureDraft(
   if (!score || !ev) throw new Error("Candidate is not scored yet");
   const flagRows = await db.select().from(flagsTable).where(eq(flagsTable.candidateId, candidateId));
   const pii = await loadPii(candidateId);
+  const decision = await getDecision(candidateId, role);
 
   const generated = await generateDraft({
     role,
-    kind: options.kind ?? existing?.kind ?? defaultKind(tierFor(score.total)),
+    // The founder's decision, once made, decides the kind; before that the AI recommends one.
+    kind: options.kind ?? kindFor(decision?.decision ?? null) ?? existing?.kind ?? defaultKind(tierFor(score.total)),
     pii,
     evidence: ev.record,
     subScores: score.subScores,
@@ -64,6 +68,18 @@ export async function ensureDraft(
   return row;
 }
 
+// After the founder decides, an unedited, unsent draft of the wrong kind is redrafted to match.
+// An edited draft is left alone: the founder's own words are never overwritten silently.
+export async function alignDraftWithDecision(candidateId: string, role: RoleKey): Promise<boolean> {
+  const decision = await getDecision(candidateId, role);
+  const wanted = kindFor(decision?.decision ?? null);
+  const existing = await latestDraft(candidateId, role);
+  if (!wanted || !existing || existing.kind === wanted) return false;
+  if (existing.status === "sent" || existing.status === "sending" || existing.editedByFounder) return false;
+  await ensureDraft(candidateId, role, { kind: wanted, force: true });
+  return true;
+}
+
 export async function editDraft(id: string, input: { subject: string; body: string }) {
   const [row] = await db
     .update(drafts)
@@ -82,6 +98,13 @@ const STALE_SENDING_MS = 10 * 60 * 1000;
 // call Resend, and the draft id doubles as Resend's idempotency key.
 export async function sendDraft(id: string): Promise<SendOutcome> {
   const mode = emailMode();
+  // The gate lives here, not only in the page: nothing is sent unless the founder has decided
+  // and the draft matches that decision.
+  const [pending] = await db.select().from(drafts).where(eq(drafts.id, id));
+  if (!pending) return { status: "failed", detail: "Draft not found" };
+  const decision = await getDecision(pending.candidateId, pending.role);
+  const blocked = sendBlock(decision?.decision ?? null, pending.kind);
+  if (blocked) return { status: "failed", detail: blocked };
   const staleBefore = new Date(Date.now() - STALE_SENDING_MS);
   const [claimed] = await db
     .update(drafts)

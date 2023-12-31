@@ -1,11 +1,11 @@
 import "server-only";
 import { desc, eq, inArray, notInArray } from "drizzle-orm";
 import { db } from "@/db/client";
-import { candidatePii, candidates, drafts, evidence, flags, scores } from "@/db/schema";
+import { candidatePii, candidates, decisions, drafts, evidence, flags, scores } from "@/db/schema";
 import { verificationQuestion } from "@/lib/drafts/brief";
 import { rank } from "@/lib/scoring/rank";
 import { isMumbai, tierFor } from "@/lib/scoring/score";
-import type { DraftStatus, FlagType, RoleKey, Tier } from "@/lib/types";
+import type { Decision, DraftStatus, FlagType, RoleKey, Tier } from "@/lib/types";
 import { chipsFor, trimChips, type Chip } from "./chips";
 import { parseSort, sortRows, type SortDir, type SortKey } from "./sort";
 import { cohortFor, type Cohort } from "./cohort";
@@ -24,10 +24,16 @@ export type DashboardRow = {
   flagTypes: FlagType[];
   emailStatus: DraftStatus | "none";
   suggestOther: boolean;
+  // The founder's call for this role; null until they decide.
+  decision: Decision | null;
 };
+
+export type DecisionFilter = Decision | "undecided";
+export type ReviewProgress = Record<DecisionFilter, number>;
 
 export type Filters = {
   tier?: Tier;
+  decision?: DecisionFilter;
   applied?: RoleKey;
   flag?: FlagType;
   suggest?: boolean;
@@ -38,7 +44,7 @@ export type Filters = {
 
 export type PendingRow = { id: string; fileName: string; status: string; reason: string | null };
 
-export type Dashboard = { rows: DashboardRow[]; all: number; cohort: Cohort; pending: PendingRow[] };
+export type Dashboard = { rows: DashboardRow[]; all: number; cohort: Cohort; progress: ReviewProgress; pending: PendingRow[] };
 
 export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promise<Dashboard> {
   const scored = await db
@@ -65,6 +71,13 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
         .where(eq(drafts.role, role))
         .orderBy(desc(drafts.createdAt))
     : [];
+  const decisionRows = ids.length
+    ? await db
+        .select({ candidateId: decisions.candidateId, decision: decisions.decision })
+        .from(decisions)
+        .where(eq(decisions.role, role))
+    : [];
+  const decided = new Map(decisionRows.map((row) => [row.candidateId, row.decision]));
   const emailStatus = new Map<string, DraftStatus>();
   for (const draft of draftRows) if (!emailStatus.has(draft.candidateId)) emailStatus.set(draft.candidateId, draft.status);
 
@@ -88,6 +101,7 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
       flagTypes: mine.map((flag) => flag.type),
       emailStatus: emailStatus.get(row.id) ?? "none",
       suggestOther: row.score.suggestOther,
+      decision: decided.get(row.id) ?? null,
       chips: trimChips(
         chipsFor({
           evidence: row.record,
@@ -117,10 +131,14 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
     role,
   );
 
+  const progress: ReviewProgress = { undecided: 0, shortlisted: 0, on_hold: 0, declined: 0 };
+  for (const row of all) progress[row.decision ?? "undecided"] += 1;
+
   const sort = parseSort(filters.sort, filters.dir);
   const filtered = all.filter(
     (row) =>
       (!filters.tier || row.tier === filters.tier) &&
+      (!filters.decision || (row.decision ?? "undecided") === filters.decision) &&
       (!filters.applied || row.appliedRole === filters.applied) &&
       (!filters.flag || row.flagTypes.includes(filters.flag)) &&
       (!filters.suggest || row.suggestOther) &&
@@ -134,7 +152,7 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
     .where(notInArray(candidates.status, ["ready"]))
     .orderBy(candidates.uploadedAt);
 
-  return { rows, all: all.length, cohort, pending };
+  return { rows, all: all.length, cohort, progress, pending };
 }
 
 export async function loadCandidate(id: string) {
@@ -149,6 +167,7 @@ export async function loadCandidate(id: string) {
     ? await db.select({ id: candidatePii.candidateId, name: candidatePii.name }).from(candidatePii).where(inArray(candidatePii.candidateId, related))
     : [];
   const draftRows = await db.select().from(drafts).where(eq(drafts.candidateId, id)).orderBy(desc(drafts.createdAt));
+  const decisionRows = await db.select().from(decisions).where(eq(decisions.candidateId, id));
   return {
     candidate,
     pii: pii ?? null,
@@ -159,6 +178,9 @@ export async function loadCandidate(id: string) {
       question: verificationQuestion({ type: flag.type, detail: flag.detail }),
       relatedName: relatedNames.find((item) => item.id === flag.relatedCandidateId)?.name ?? null,
     })),
+    decisions: Object.fromEntries(decisionRows.map((row) => [row.role, row])) as Partial<
+      Record<RoleKey, (typeof decisionRows)[number]>
+    >,
     drafts: {
       pm: draftRows.find((row) => row.role === "pm") ?? null,
       spm: draftRows.find((row) => row.role === "spm") ?? null,

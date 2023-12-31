@@ -1,6 +1,7 @@
 "use client";
 
-import { CircleCheck, FlaskConical, Mail } from "lucide-react";
+import { CircleCheck, FlaskConical, Info, Mail } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { openDraft, regenerateDraft, saveDraft, sendDraftAction } from "@/app/actions/drafts";
@@ -11,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { drafts } from "@/db/schema";
-import { ROLE_LABEL, type RoleKey } from "@/lib/types";
+import { kindFor, sendBlock } from "@/lib/decisions";
+import { ROLE_LABEL, type Decision, type RoleKey } from "@/lib/types";
 
 type Draft = typeof drafts.$inferSelect;
 
@@ -23,6 +25,9 @@ export function DraftPanel(props: {
   hasEmail: boolean;
   candidateEmail: string | null;
   testInbox: string | null;
+  decision: Decision | null;
+  appliedRole: RoleKey;
+  from: RoleKey;
 }) {
   const { candidateId, role, draft } = props;
   const router = useRouter();
@@ -70,6 +75,10 @@ export function DraftPanel(props: {
   const sent = draft.status === "sent";
   const edited = subject !== draft.subject || body !== draft.body;
   const otherKind = draft.kind === "invite" ? "rejection" : "invite";
+  // Nothing is sent until the founder has decided and the draft matches that decision.
+  const block = sendBlock(props.decision, draft.kind);
+  const mismatch = kindFor(props.decision) !== null && block !== null;
+  const otherRole: RoleKey = role === "pm" ? "spm" : "pm";
   const live = props.emailMode === "live";
   const sendNow = () =>
     run(`Email sent to ${live ? props.candidateEmail : (props.testInbox ?? "the test inbox")}`, async () => {
@@ -118,10 +127,11 @@ export function DraftPanel(props: {
         )}
       </section>
 
-      <section className="mt-8">
+      <section id="email" className="mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-semibold">
-            Email · {draft.kind === "invite" ? "interview invite" : "rejection"}
+            Email · {draft.kind === "invite" ? "interview invite" : "rejection"} · for {ROLE_LABEL[role]}
+            {role === props.appliedRole ? " (applied)" : ""}
           </h2>
           <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
             {sent && <CircleCheck aria-hidden className="anim-pop size-4 text-emerald-600 dark:text-emerald-400" />}
@@ -136,6 +146,17 @@ export function DraftPanel(props: {
                     : "AI draft"}
           </span>
         </div>
+        {!sent && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Written for the role they applied for.{" "}
+            <Link
+              className="underline"
+              href={`/candidates/${candidateId}?role=${otherRole}&from=${props.from}#email`}
+            >
+              Write it for {ROLE_LABEL[otherRole]} instead
+            </Link>
+          </p>
+        )}
         {draft.scoresChanged && !sent && (
           <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">Scores changed since this draft.</p>
         )}
@@ -166,7 +187,7 @@ export function DraftPanel(props: {
         {!sent && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button
-              disabled={pending || edited || !props.hasEmail || !props.emailMode || draft.status === "needs_manual_edit"}
+              disabled={pending || edited || block !== null || !props.hasEmail || !props.emailMode || draft.status === "needs_manual_edit"}
               onClick={() => (live ? setConfirmOpen(true) : sendNow())}
             >
               {pending ? "Working…" : live ? "Send" : "Send to test inbox"}
@@ -179,7 +200,7 @@ export function DraftPanel(props: {
               Save edits
             </Button>
             <Button
-              variant="outline"
+              variant={mismatch ? "default" : "outline"}
               disabled={pending}
               onClick={() => run("Regenerated.", () => regenerateDraft(candidateId, role, otherKind))}
             >
@@ -189,6 +210,16 @@ export function DraftPanel(props: {
               Regenerate
             </Button>
           </div>
+        )}
+        {!sent && block && (
+          <p
+            role="status"
+            data-testid="send-block"
+            className="mt-3 flex items-start gap-2 rounded-md border border-amber-300 bg-amber-100 p-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
+          >
+            <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+            {block}
+          </p>
         )}
         <p className="mt-2 text-xs text-muted-foreground">
           {!props.hasEmail ? "Add an email address to send. " : ""}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CandidateNav } from "@/components/candidate-nav";
 import { CopyButton } from "@/components/copy-button";
+import { DecisionBadge } from "@/components/decision-badge";
 import { RadarChart } from "@/components/radar-chart";
 import { ScoreBar } from "@/components/score-bar";
 import { TierBadge } from "@/components/tier-badge";
@@ -14,6 +15,7 @@ import { tierFor } from "@/lib/scoring/score";
 import { isProductRole } from "@/lib/scoring/years";
 import { ROLE_LABEL, type RoleKey, type Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { DecisionPanel } from "./decision-panel";
 import { DetailsForm } from "./details-form";
 import { DraftPanel } from "./draft-panel";
 import { RetryButton } from "./retry-button";
@@ -49,10 +51,15 @@ export default async function CandidatePage({
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const view = await loadCandidate(id);
   if (!view) notFound();
-  const { candidate, pii, evidence, scores, flags, drafts } = view;
-  const role: RoleKey = parseRole(Array.isArray(search.role) ? search.role[0] : search.role) ?? candidate.appliedRole;
+  const { candidate, pii, evidence, scores, flags, drafts, decisions } = view;
+  const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
+  // The role being reviewed (score, decision, email) defaults to the one they applied for.
+  const role: RoleKey = parseRole(one(search.role)) ?? candidate.appliedRole;
+  // The ranking they came from, for the back link and previous/next. It can differ from `role`.
+  const from: RoleKey = parseRole(one(search.from)) ?? role;
   const score = scores[role];
-  const nav = score ? await neighbours(id, role) : null;
+  const decision = decisions[role] ?? null;
+  const nav = scores[from] ? await neighbours(id, from) : null;
   const mode = (() => {
     try {
       return emailMode();
@@ -65,15 +72,18 @@ export default async function CandidatePage({
     <main className="mx-auto max-w-5xl px-4 py-6 md:px-6">
       <div className="sticky top-0 z-20 -mx-4 border-b bg-background px-4 pt-3 pb-3 md:-mx-6 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Link href={`/?role=${role}`} className="inline-block min-h-6 text-sm text-muted-foreground hover:underline">
-          ← {ROLE_LABEL[role]} ranking
+        <Link href={`/?role=${from}`} className="inline-block min-h-6 text-sm text-muted-foreground hover:underline">
+          ← {ROLE_LABEL[from]} ranking
         </Link>
-        {nav && <CandidateNav neighbours={nav} role={role} />}
+        {nav && <CandidateNav neighbours={nav} from={from} />}
       </div>
 
       <header className="mt-2 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight break-words md:text-2xl">{pii?.name ?? candidate.fileName}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl font-semibold tracking-tight break-words md:text-2xl">{pii?.name ?? candidate.fileName}</h1>
+            <DecisionBadge decision={decision?.decision ?? null} />
+          </div>
           <p className="mt-1 text-sm break-all text-muted-foreground">
             {pii?.emails[0] ?? "no email found"} · {pii?.phones[0] ? `+91 ${pii.phones[0]}` : "no phone found"} ·{" "}
             <a className="hover:underline" href={`/api/candidates/${id}/file`} target="_blank" rel="noreferrer">
@@ -86,7 +96,7 @@ export default async function CandidatePage({
             scores[key] ? (
               <Link
                 key={key}
-                href={`/candidates/${id}?role=${key}`}
+                href={`/candidates/${id}?role=${key}&from=${from}`}
                 className={cn("rounded-lg border px-4 py-2 text-center", key === role && "border-foreground")}
               >
                 <div className="text-xs text-muted-foreground">{ROLE_LABEL[key]}</div>
@@ -127,7 +137,7 @@ export default async function CandidatePage({
                   {flag.relatedName && flag.relatedCandidateId && (
                     <p className="mt-0.5">
                       Same CV as{" "}
-                      <Link className="underline" href={`/candidates/${flag.relatedCandidateId}?role=${role}`}>
+                      <Link className="underline" href={`/candidates/${flag.relatedCandidateId}?from=${from}`}>
                         {flag.relatedName}
                       </Link>
                     </p>
@@ -151,24 +161,37 @@ export default async function CandidatePage({
       {score && (
         <section className="mt-8">
           <h2 className="text-lg font-semibold">Why {score.total} for {ROLE_LABEL[role]}</h2>
-          <div className="anim-fade-up mt-3 flex flex-col items-center gap-5 rounded-xl border bg-card p-4 shadow-xs sm:flex-row">
-            <RadarChart
-              scores={score.subScores.map((item) => item.score)}
-              labels={score.subScores.map((item) => item.criterion)}
-            />
-            <div className="min-w-0 flex-1 text-center sm:text-left">
-              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Suggested next step</p>
-              <p className="mt-1 flex items-center justify-center gap-2 text-xl font-semibold tracking-tight sm:justify-start">
-                {NEXT_STEP[tierFor(score.total)].title}
-                <TierBadge tier={tierFor(score.total)} />
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">{NEXT_STEP[tierFor(score.total)].text}</p>
-              <p className="mt-3 text-sm text-muted-foreground tabular-nums">
-                Product {score.productYears.toFixed(1)} yrs · Total {score.totalYears.toFixed(1)} yrs · suggested role:{" "}
-                {score.suggestedRole.replace("_", " ").replace("pm or spm", "PM or Senior PM")}
-                {score.suggestOther ? " (differs from the applied role)" : ""}
-              </p>
+          <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <div className="anim-fade-up flex flex-col items-center gap-5 rounded-xl border bg-card p-4 shadow-xs sm:flex-row">
+              <RadarChart
+                scores={score.subScores.map((item) => item.score)}
+                labels={score.subScores.map((item) => item.criterion)}
+              />
+              <div className="min-w-0 flex-1 text-center sm:text-left">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">AI recommendation</p>
+                <p className="mt-1 flex flex-wrap items-center justify-center gap-2 text-xl font-semibold tracking-tight sm:justify-start">
+                  {NEXT_STEP[tierFor(score.total)].title}
+                  <TierBadge tier={tierFor(score.total)} />
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{NEXT_STEP[tierFor(score.total)].text}</p>
+                <p className="mt-3 text-sm text-muted-foreground tabular-nums">
+                  Product {score.productYears.toFixed(1)} yrs · Total {score.totalYears.toFixed(1)} yrs · suggested role:{" "}
+                  {score.suggestedRole.replace("_", " ").replace("pm or spm", "PM or Senior PM")}
+                  {score.suggestOther ? " (differs from the applied role)" : ""}
+                </p>
+              </div>
             </div>
+            <DecisionPanel
+              key={`${role}-${decision?.decision ?? "none"}-${decision?.decidedAt.getTime() ?? 0}`}
+              candidateId={id}
+              role={role}
+              tier={tierFor(score.total)}
+              current={
+                decision
+                  ? { decision: decision.decision, note: decision.note, decidedAt: decision.decidedAt.toISOString() }
+                  : null
+              }
+            />
           </div>
           <ol className="mt-4 space-y-3">
             {score.subScores.map((item, itemIndex) => {
@@ -241,6 +264,9 @@ export default async function CandidatePage({
           hasEmail={Boolean(pii?.emails[0])}
           candidateEmail={pii?.emails[0] ?? null}
           testInbox={process.env.EMAIL_TEST_TO ?? null}
+          decision={decision?.decision ?? null}
+          appliedRole={candidate.appliedRole}
+          from={from}
         />
       )}
     </main>

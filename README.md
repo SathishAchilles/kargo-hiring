@@ -11,8 +11,12 @@ upload CV + role ──▶ extract text ──▶ separate personal details, red
                                                                                      │
           dashboard ◀── rank + insight chips ◀── integrity checks ◀── score both rubrics in code
               │
-              └──▶ AI writes brief + email draft ──▶ founder edits ──▶ one-click send (Resend)
+              └──▶ AI recommends (Strong / Good / Partial / Weak match)
+                        └──▶ YOU decide: shortlist, hold or decline ──▶ matching email draft ──▶ one-click send (Resend)
 ```
+
+- **The AI recommends; you decide.** The tiers are recommendations, never decisions. Nobody is shortlisted, held or declined until you record it (per candidate and role, with an optional private note), and the dashboard tracks how many you have decided. An email can only be sent once your decision matches it: an invite for Shortlisted, a rejection for Declined, nothing on hold. The server enforces this in `sendDraft`, not only the page.
+- **Candidates open in the role they applied for**, and the email is written for that role by default; one link switches the page and email to the other role.
 
 - **AI reads, code scores.** One AI call turns the redacted CV into an evidence record in which every fact carries a verbatim quote; facts whose quote is not in the CV are dropped. The rubric scores are computed in code (`src/lib/scoring/rubric.ts`), so the same evidence always gives the same score and a changed as-of date rescores with no AI call.
 - **Personal details never reach AI.** Name, email, phone, links and education institutions are removed before any AI request, and every request passes a leak gate (`src/lib/pii/gate.ts`) that refuses to send if any stored personal detail is still present. Only `src/lib/ai/client.ts` may call the Anthropic API; a test enforces this.
@@ -75,7 +79,7 @@ Compares the imported 50 with the manual scoring pass in `calibration/manual-sco
 - `redirect` (default): every email goes to `EMAIL_TEST_TO`, with the candidate's address in the subject as `[to: …]`. The CVs contain real student mailboxes, so this is the only safe mode for testing.
 - `live`: emails go to candidates. Requires `RESEND_FROM` on a domain verified in Resend.
 
-Each draft sends at most once: the send claims the draft row before calling Resend, and the draft id is Resend's idempotency key.
+Sending is also gated on your decision (see above). Each draft sends at most once: the send claims the draft row before calling Resend, and the draft id is Resend's idempotency key.
 
 ## Clean data and demo data
 

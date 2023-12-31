@@ -15,6 +15,7 @@ import type { Evidence } from "@/lib/evidence/schema";
 import type { Step } from "@/lib/pipeline/runner";
 import type {
   Brief,
+  Decision,
   CandidateStatus,
   DraftKind,
   DraftStatus,
@@ -157,5 +158,23 @@ export const drafts = kargo
       error: text("error"),
       createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     },
+  )
+  .enableRLS();
+
+// The founder's decision per candidate and role. The AI recommends; a row here is a person
+// having decided. No row means not decided yet.
+export const decisions = kargo
+  .table(
+    "decisions",
+    {
+      candidateId: uuid("candidate_id")
+        .notNull()
+        .references(() => candidates.id, { onDelete: "cascade" }),
+      role: text("role").$type<RoleKey>().notNull(),
+      decision: text("decision").$type<Decision>().notNull(),
+      note: text("note"),
+      decidedAt: timestamp("decided_at", { withTimezone: true }).notNull().defaultNow(),
+    },
+    (t) => [primaryKey({ columns: [t.candidateId, t.role] })],
   )
   .enableRLS();

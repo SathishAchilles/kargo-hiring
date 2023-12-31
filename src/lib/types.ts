@@ -25,6 +25,18 @@ export const TIER_LABEL: Record<Tier, string> = {
   Weak: "Weak match",
 };
 
+// The founder's decision for a candidate and a role. No row means "not decided yet": the AI
+// recommends, only a person shortlists, holds or declines.
+export type Decision = "shortlisted" | "on_hold" | "declined";
+
+export const DECISIONS: Decision[] = ["shortlisted", "on_hold", "declined"];
+
+export const DECISION_LABEL: Record<Decision, string> = {
+  shortlisted: "Shortlisted",
+  on_hold: "On hold",
+  declined: "Declined",
+};
+
 export type SuggestedRole = "below_band" | "pm" | "pm_or_spm" | "spm";
 
 export type SubScore = {
