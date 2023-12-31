@@ -1,0 +1,92 @@
+import { describe, expect, it } from "vitest";
+import { chipsFor, type ChipInput } from "@/lib/dashboard/chips";
+import { cohortFor, type CohortRow } from "@/lib/dashboard/cohort";
+import type { SubScore } from "@/lib/types";
+import { evidence, role } from "./helpers/evidence";
+
+const base = (overrides: Partial<ChipInput> = {}): ChipInput => ({
+  evidence: evidence(),
+  productYears: 3,
+  totalYears: 5,
+  tieBrokenBy: null,
+  suggestedRole: "pm",
+  suggestOther: false,
+  flagCount: 0,
+  flagSummaries: [],
+  isMumbai: null,
+  ...overrides,
+});
+
+const labels = (input: ChipInput) => chipsFor(input).map((chip) => chip.label);
+
+describe("insight chips", () => {
+  it("shows product vs total years and Ops → Product for a senior applicant", () => {
+    const e = evidence({
+      roles: [
+        role({ roleType: "operations", opsDomain: "freight", start: "2017-06", end: "2020-12", quote: "Terminal Operations" }),
+        role({ start: "2021-01" }),
+      ],
+    });
+    expect(labels(base({ evidence: e, productYears: 4, totalYears: 7 }))).toEqual(
+      expect.arrayContaining(["Product 4.0 yrs · Total 7.0 yrs", "Ops → Product"]),
+    );
+  });
+
+  it("shows Kill evidence with the quote, or No kills", () => {
+    const withKill = evidence({ killed: [{ what: "portal", reason: "low adoption", sunkCost: false, quote: "Killed a supplier portal" }] });
+    const chip = chipsFor(base({ evidence: withKill })).find((item) => item.key === "kills");
+    expect(chip?.label).toBe("Kill evidence");
+    expect(chip?.evidence[0]).toContain("Killed a supplier portal");
+    expect(chip?.evidence[0]).toContain("low adoption");
+    expect(labels(base())).toContain("No kills");
+  });
+
+  it("shows Big-company structure only when every product role is at 100+ with a PM above", () => {
+    const big = evidence({ roles: [role({ companySizeBand: "100_plus", pmAbove: true })] });
+    const mixed = evidence({
+      roles: [role({ companySizeBand: "100_plus", pmAbove: true }), role({ companySizeBand: "under_100", pmAbove: false })],
+    });
+    expect(labels(base({ evidence: big }))).toContain("Big-company structure");
+    expect(labels(base({ evidence: mixed }))).not.toContain("Big-company structure");
+  });
+
+  it("shows tie-break, suggestion, flags and location", () => {
+    const all = labels(
+      base({ tieBrokenBy: "kill evidence", suggestOther: true, suggestedRole: "spm", flagCount: 2, isMumbai: false, evidence: evidence({ location: { text: "Chennai", quote: "Chennai" } }) }),
+    );
+    expect(all).toEqual(expect.arrayContaining(["Tie broken by: kill evidence", "Suggest: Senior PM", "Flags: 2", "Outside Mumbai"]));
+  });
+});
+
+describe("cohort panel", () => {
+  const scores = (values: number[], prefix = "P"): SubScore[] =>
+    values.map((score, index) => ({ criterion: `${prefix}${index + 1}`, score, anchor: "", quotes: [] }));
+  const row = (id: string, total: number, sub: number[], extra: Partial<CohortRow> = {}): CohortRow => ({
+    id,
+    total,
+    tier: total >= 80 ? "Shortlist" : total >= 65 ? "Interview" : total >= 50 ? "Hold" : "Decline",
+    appliedRole: "pm",
+    subScores: scores(sub),
+    suggestOther: false,
+    flagTypes: [],
+    ...extra,
+  });
+
+  it("counts ties at the top and finds the scarcest criterion", () => {
+    const rows = [
+      row("a", 100, [5, 5, 5, 5, 5]),
+      row("b", 100, [5, 5, 5, 5, 5]),
+      row("c", 100, [5, 5, 5, 5, 5]),
+      row("d", 100, [5, 5, 5, 5, 5]),
+      row("e", 60, [1, 5, 5, 5, 3], { appliedRole: "spm", suggestOther: true, flagTypes: ["duplicate"] }),
+    ];
+    const cohort = cohortFor(rows, "pm");
+    expect(cohort.tiedAtTop).toBe(4);
+    expect(cohort.topTotal).toBe(100);
+    expect(cohort.scarcest).toEqual({ criterion: "P1", fives: 4 });
+    expect(cohort.tiers).toEqual({ Shortlist: 4, Interview: 0, Hold: 1, Decline: 0 });
+    expect(cohort.averageApplicants).toBe(100);
+    expect(cohort.suggestOther).toBe(1);
+    expect(cohort.flags).toEqual({ duplicate: 1 });
+  });
+});
