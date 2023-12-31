@@ -1,0 +1,212 @@
+{
+ "file": "spm_16_siddharth_rao.pdf",
+ "dropped": 0,
+ "redacted": "[CANDIDATE] [CANDIDATE]\nSenior Product Manager\n[PHONE] · [EMAIL] · Mumbai · [LINK]\nProfessional Summary\nSenior Product Manager with 7 years of experience — 3 years in port and terminal operations at JNPT, followed by\n4 years in logistics SaaS product roles. Deep understanding of how freight moves through Indian ports, the\noperational pressures on freight forwarders and CHAs, and where software consistently fails them. Led product\nfunction independently at a startup for 2.5 years.\nWork Experience\nHead of Product (SPM-equivalent)\nPortwise Technologies Pvt. Ltd. (Port & Logistics SaaS, 55 employees), Mumbai · Aug 2022 – Present\n— Led the product function as the sole senior PM for 2.5 years — owned roadmap, discovery, and delivery with no PM\nmanager; reported directly to co-founder\n— Rebuilt the entire product architecture from a single monolith to a modular suite after understanding that freight\nforwarders needed to adopt specific features without the full platform commitment — decision made after 3 months of\ncustomer discovery, not based on engineering preference\n— Shipped 12 features in 3 years; killed 4 post-launch based on usage data; one killed feature was my own idea from\nthe previous roadmap cycle\n— Designed the JNPT container tracking integration after understanding the ICEGATE API limitations from my time in\nterminal operations — feature worked because I knew what the data actually contained, not just the field names\n— Grew managed accounts from 8 to 34 over 2 years; sat in on every new customer onboarding in the first year to\nunderstand where the product broke\nSenior Product Manager\nLogiStack Technologies (Freight Management SaaS), Mumbai · Jan 2021 – Jul 2022\n— Owned the freight booking and carrier allocation module — led a 4-person squad\n— Shipped a multi-carrier rate comparison feature that increased booking conversion from the platform by 22%\n— Led the integration with ICEGATE for automated customs filing status — reduced the most common client support\nticket by 60%\nTerminal Operations Executive → Senior Operations Executive\nJNPT (Jawaharlal Nehru Port Trust), Nhava Sheva · Jun 2017 – Dec 2020\n— Managed berth allocation, vessel scheduling, and container handling coordination at JNPT's Terminal 4\n— Coordinated daily with shipping lines, freight forwarders, CHAs, and customs authorities on vessel and cargo\nclearance timelines\n— Led the night shift terminal operations team of 18 for 14 months — managed emergency cargo releases, vessel\ndelays, and chassis shortages without escalation in most cases\n— Built the shift's first digital container dwell-time tracker; port management adopted it across 2 other shifts within 3\nmonths\nEducation\nMBA, Operations · [INSTITUTION], Mumbai · 2015–2017\nB.E., Mechanical Engineering · [INSTITUTION] · 2011–2015 · First Division\nSkills & Certifications\nProduct strategy & roadmap · Port & terminal operations · Freight forwarding domain · ICEGATE · CargoWise · JIRA ·\nFigma · SQL · Miro\nFIATA Advanced Freight Forwarding Module (2019) · SAFe 5 Product Owner/PM (2022)",
+ "record": {
+  "roles": [
+   {
+    "title": "Terminal Operations Executive → Senior Operations Executive",
+    "company": "JNPT (Jawaharlal Nehru Port Trust)",
+    "start": "2017-06",
+    "end": "2020-12",
+    "internship": false,
+    "roleType": "operations",
+    "opsDomain": "freight",
+    "companySizeBand": "100_plus",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": false,
+    "onsiteOpsImmersion": true,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Managed berth allocation, vessel scheduling, and container handling coordination at JNPT's Terminal 4",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Senior Product Manager",
+    "company": "LogiStack Technologies",
+    "start": "2021-01",
+    "end": "2022-07",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "none",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Owned the freight booking and carrier allocation module — led a 4-person squad",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Head of Product (SPM-equivalent)",
+    "company": "Portwise Technologies Pvt. Ltd.",
+    "start": "2022-08",
+    "end": "present",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "none",
+    "companySizeBand": "under_100",
+    "soleOrFirstPm": true,
+    "pmAbove": false,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Led the product function as the sole senior PM for 2.5 years — owned roadmap, discovery, and delivery with no PM",
+    "companyHeadcount": null,
+    "companyStage": null
+   }
+  ],
+  "education": [
+   {
+    "degree": "MBA, Operations",
+    "startYear": 2015,
+    "endYear": 2017,
+    "mode": "full_time",
+    "quote": "MBA, Operations · [INSTITUTION], Mumbai · 2015–2017"
+   },
+   {
+    "degree": "B.E., Mechanical Engineering",
+    "startYear": 2011,
+    "endYear": 2015,
+    "mode": "full_time",
+    "quote": "B.E., Mechanical Engineering · [INSTITUTION] · 2011–2015 · First Division"
+   }
+  ],
+  "shipped": [
+   {
+    "what": "Digital container dwell-time tracker",
+    "outcome": "port management adopted it across 2 other shifts within 3 months",
+    "iterated": false,
+    "roleIndex": 0,
+    "quote": "Built the shift's first digital container dwell-time tracker; port management adopted it across 2 other shifts within 3"
+   },
+   {
+    "what": "Multi-carrier rate comparison feature",
+    "outcome": "increased booking conversion from the platform by 22%",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Shipped a multi-carrier rate comparison feature that increased booking conversion from the platform by 22%"
+   },
+   {
+    "what": "ICEGATE integration for automated customs filing status",
+    "outcome": "reduced the most common client support ticket by 60%",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Led the integration with ICEGATE for automated customs filing status — reduced the most common client support"
+   },
+   {
+    "what": "12 features",
+    "outcome": null,
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Shipped 12 features in 3 years; killed 4 post-launch based on usage data"
+   },
+   {
+    "what": "JNPT container tracking integration",
+    "outcome": null,
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Designed the JNPT container tracking integration after understanding the ICEGATE API limitations from my time in"
+   },
+   {
+    "what": "Modular product suite rebuilt from monolith",
+    "outcome": null,
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Rebuilt the entire product architecture from a single monolith to a modular suite"
+   }
+  ],
+  "killed": [
+   {
+    "what": "4 features post-launch, including one that was their own idea",
+    "reason": "based on usage data",
+    "sunkCost": false,
+    "quote": "killed 4 post-launch based on usage data; one killed feature was my own idea from"
+   }
+  ],
+  "discovery": [
+   {
+    "cadence": "occasional",
+    "onsite": false,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "decision made after 3 months of"
+   },
+   {
+    "cadence": "recurring",
+    "onsite": false,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "sat in on every new customer onboarding in the first year to"
+   }
+  ],
+  "integrations": [
+   {
+    "system": "ICEGATE",
+    "category": "customs_port",
+    "involvement": "led",
+    "commercialOutcome": null,
+    "quote": "Led the integration with ICEGATE for automated customs filing status"
+   },
+   {
+    "system": "JNPT container tracking / ICEGATE API",
+    "category": "customs_port",
+    "involvement": "owned",
+    "commercialOutcome": null,
+    "quote": "Designed the JNPT container tracking integration after understanding the ICEGATE API limitations from my time in"
+   }
+  ],
+  "platforms": [],
+  "decisions": [
+   {
+    "what": "Rebuilt product architecture from monolith to modular suite after customer discovery",
+    "irreversible": true,
+    "quote": "Rebuilt the entire product architecture from a single monolith to a modular suite after understanding that freight"
+   },
+   {
+    "what": "Killed 4 features post-launch including own idea",
+    "irreversible": false,
+    "quote": "killed 4 post-launch based on usage data; one killed feature was my own idea from"
+   }
+  ],
+  "statedFigures": [
+   {
+    "about": "total_experience",
+    "roleIndex": null,
+    "years": 7,
+    "quote": "Senior Product Manager with 7 years of experience"
+   },
+   {
+    "about": "role",
+    "roleIndex": 0,
+    "years": 3,
+    "quote": "3 years in port and terminal operations at JNPT"
+   },
+   {
+    "about": "product_experience",
+    "roleIndex": null,
+    "years": 4,
+    "quote": "4 years in logistics SaaS product roles"
+   },
+   {
+    "about": "role",
+    "roleIndex": 2,
+    "years": 2.5,
+    "quote": "Led the product function as the sole senior PM for 2.5 years"
+   }
+  ],
+  "location": {
+   "text": "Mumbai",
+   "quote": "[PHONE] · [EMAIL] · Mumbai · [LINK]"
+  }
+ }
+}

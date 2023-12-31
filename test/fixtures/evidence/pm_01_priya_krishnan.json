@@ -1,0 +1,159 @@
+{
+ "file": "pm_01_priya_krishnan.pdf",
+ "dropped": 0,
+ "redacted": "[CANDIDATE] [CANDIDATE]\nProduct Manager\n[PHONE] · [EMAIL] · Mumbai · [LINK]\nPROFESSIONAL SUMMARY\nProduct Manager with 4 years of experience in logistics operations and freight-tech SaaS. Built fluency in how\nfreight forwarders and 3PLs operate before moving into product. Owned product areas independently at an\nearly-stage company. Ship fast, learn from what lands, cut what doesn't.\nWORK EXPERIENCE\nProduct Manager\nPortzen Technologies Pvt. Ltd. (Freight Visibility SaaS, 35 employees), Mumbai · Mar 2022 – Present\n— Sole PM responsible for shipment tracking, exception management, and carrier integration modules — no PM\nmanager above, decisions owned end-to-end\n— Shipped 7 features in 14 months; killed 3 after post-launch data showed <8% adoption despite strong qualitative\nsignal in discovery\n— Reduced customer-reported exceptions by 34% through a proactive alert system designed after spending 2 weeks\nembedded with the operations teams of 3 freight forwarder clients\n— Built the product's first API documentation in collaboration with engineering — reduced new customer integration\ntimelines from 6 weeks to 3 weeks\n— Ran fortnightly discovery sessions with freight forwarder ops teams; fed findings directly into sprint planning with no\ntranslation layer\nOperations Coordinator\nMahindra Logistics Ltd., Mumbai · Jul 2020 – Feb 2022\n— Managed day-to-day operations for 3 FMCG client accounts — carrier allocation, inbound shipment scheduling,\nand exception resolution across 400+ movements monthly\n— Built a carrier performance tracking sheet that became the branch's standard reporting tool — introduced carrier\naccountability conversations that hadn't existed before\n— Coordinated directly with CHA partners on customs documentation for time-sensitive pharma imports — learned\nthe documentation chain from both sides\n— Led a process improvement initiative that reduced average dwell time at the Mumbai DC by 1.8 days over 6 months\nGraduate Trainee — Supply Chain\nMahindra Logistics Ltd., Mumbai · Feb 2020 – Jun 2020\n— 5-month rotational programme across warehousing, last-mile, and customer operations functions\n— Supported the ops team during a 3PL contract renewal — gathered usage data, documented service gaps, and\nprepared the internal review deck\nEDUCATION\nB.Com (Hons.) · [INSTITUTION], [INSTITUTION] · 2016–2019 · First Division\nSKILLS & CERTIFICATIONS\nProduct roadmapping · PRD authoring · Freight operations · JIRA · Figma · Mixpanel · SQL (working knowledge) ·\nCargoWise One · Excel\n[INSTITUTION] · APICS CSCP (in progress)",
+ "record": {
+  "roles": [
+   {
+    "title": "Graduate Trainee — Supply Chain",
+    "company": "Mahindra Logistics Ltd.",
+    "start": "2020-02",
+    "end": "2020-06",
+    "internship": true,
+    "roleType": "operations",
+    "opsDomain": "freight",
+    "companySizeBand": "100_plus",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": false,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "5-month rotational programme across warehousing, last-mile, and customer operations functions",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Operations Coordinator",
+    "company": "Mahindra Logistics Ltd.",
+    "start": "2020-07",
+    "end": "2022-02",
+    "internship": false,
+    "roleType": "operations",
+    "opsDomain": "freight",
+    "companySizeBand": "100_plus",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": false,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Managed day-to-day operations for 3 FMCG client accounts — carrier allocation, inbound shipment scheduling,",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Product Manager",
+    "company": "Portzen Technologies Pvt. Ltd.",
+    "start": "2022-03",
+    "end": "present",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "freight",
+    "companySizeBand": "under_100",
+    "soleOrFirstPm": true,
+    "pmAbove": false,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": true,
+    "builtProductPractice": true,
+    "committeeDecisions": false,
+    "quote": "Sole PM responsible for shipment tracking, exception management, and carrier integration modules — no PM",
+    "companyHeadcount": null,
+    "companyStage": null
+   }
+  ],
+  "education": [
+   {
+    "degree": "B.Com (Hons.)",
+    "startYear": 2016,
+    "endYear": 2019,
+    "mode": "full_time",
+    "quote": "B.Com (Hons.) · [INSTITUTION], [INSTITUTION] · 2016–2019 · First Division"
+   }
+  ],
+  "shipped": [
+   {
+    "what": "7 features",
+    "outcome": null,
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Shipped 7 features in 14 months"
+   },
+   {
+    "what": "Proactive alert system",
+    "outcome": "Reduced customer-reported exceptions by 34%",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Reduced customer-reported exceptions by 34% through a proactive alert system designed after spending 2 weeks"
+   },
+   {
+    "what": "Product's first API documentation",
+    "outcome": "Reduced new customer integration timelines from 6 weeks to 3 weeks",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Built the product's first API documentation in collaboration with engineering — reduced new customer integration"
+   }
+  ],
+  "killed": [
+   {
+    "what": "3 features",
+    "reason": "post-launch data showed <8% adoption despite strong qualitative signal in discovery",
+    "sunkCost": false,
+    "quote": "killed 3 after post-launch data showed <8% adoption despite strong qualitative"
+   }
+  ],
+  "discovery": [
+   {
+    "cadence": "recurring",
+    "onsite": false,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "Ran fortnightly discovery sessions with freight forwarder ops teams"
+   },
+   {
+    "cadence": "occasional",
+    "onsite": true,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "embedded with the operations teams of 3 freight forwarder clients"
+   }
+  ],
+  "integrations": [
+   {
+    "system": "Carrier integration modules",
+    "category": "carrier",
+    "involvement": "owned",
+    "commercialOutcome": null,
+    "quote": "Sole PM responsible for shipment tracking, exception management, and carrier integration modules — no PM"
+   }
+  ],
+  "platforms": [
+   {
+    "what": "Shipment tracking module",
+    "quote": "Sole PM responsible for shipment tracking, exception management, and carrier integration modules — no PM"
+   }
+  ],
+  "decisions": [
+   {
+    "what": "Killed 3 features after post-launch data showed low adoption",
+    "irreversible": false,
+    "quote": "killed 3 after post-launch data showed <8% adoption despite strong qualitative"
+   }
+  ],
+  "statedFigures": [
+   {
+    "about": "total_experience",
+    "roleIndex": null,
+    "years": 4,
+    "quote": "Product Manager with 4 years of experience in logistics operations and freight-tech SaaS."
+   }
+  ],
+  "location": {
+   "text": "Mumbai",
+   "quote": "[EMAIL] · Mumbai · [LINK]"
+  }
+ }
+}
