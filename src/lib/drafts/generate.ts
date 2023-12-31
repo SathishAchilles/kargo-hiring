@@ -123,11 +123,11 @@ export async function generateDraft(input: DraftInput, signature = process.env.F
   const factIds = new Set(factsFor(input.evidence).map((fact) => fact.id));
   const user = buildUserMessage(input, rule);
 
-  let draft = await parseGated({ pii: input.pii, model: DRAFT_MODEL, system: SYSTEM, user, schema: draftSchema, effort: "medium", maxTokens: 8000 });
+  let draft = await parseGated({ pii: input.pii, model: DRAFT_MODEL, system: SYSTEM, user, schema: draftSchema, effort: "medium", maxTokens: 16000 });
   let problems = draftProblems(input.kind, draft, factIds, input.flags);
   if (problems.length) {
     const retryUser = `${user}\n\nYour previous email broke these rules: ${problems.join("; ")}. Write it again.`;
-    draft = await parseGated({ pii: input.pii, model: DRAFT_MODEL, system: SYSTEM, user: retryUser, schema: draftSchema, effort: "medium", maxTokens: 8000 });
+    draft = await parseGated({ pii: input.pii, model: DRAFT_MODEL, system: SYSTEM, user: retryUser, schema: draftSchema, effort: "medium", maxTokens: 16000 });
     problems = draftProblems(input.kind, draft, factIds, input.flags);
   }
 

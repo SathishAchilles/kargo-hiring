@@ -58,10 +58,14 @@ describe("AI calls outside the gated client", () => {
     });
   }
 
-  it("only src/lib/ai/client.ts talks to the Anthropic SDK", () => {
+  it("only src/lib/ai/client.ts talks to a model provider", () => {
     const offenders = sourceFiles(path.resolve("src"))
       .filter((file) => !file.endsWith(path.join("lib", "ai", "client.ts")))
-      .filter((file) => /@anthropic-ai\/sdk|messages\.(create|parse|stream)\(/.test(readFileSync(file, "utf8")));
+      .filter((file) =>
+        /@google\/genai|@anthropic-ai\/sdk|generativelanguage\.googleapis|api\.anthropic\.com|models\.generateContent\(|messages\.(create|parse|stream)\(/.test(
+          readFileSync(file, "utf8"),
+        ),
+      );
     expect(offenders).toEqual([]);
   });
 });
