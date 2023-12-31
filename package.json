@@ -16,7 +16,11 @@
     "process": "tsx --env-file=.env.local scripts/process-candidate.ts",
     "calibrate": "tsx --env-file=.env.local scripts/calibrate.ts",
     "reprocess": "tsx --env-file=.env.local scripts/reprocess.ts",
-    "check:privacy": "tsx --env-file=.env.local scripts/check-privacy.ts"
+    "check:privacy": "tsx --env-file=.env.local scripts/check-privacy.ts",
+    "data:status": "tsx scripts/data.ts status",
+    "data:backup": "tsx scripts/data.ts backup",
+    "data:reset": "tsx scripts/data.ts reset",
+    "data:restore": "tsx scripts/data.ts restore"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
