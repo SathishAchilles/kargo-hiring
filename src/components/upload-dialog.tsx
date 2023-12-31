@@ -25,7 +25,11 @@ const ROLES = [
 
 const ACCEPT = ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
-const kb = (bytes: number) => (bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`);
+const size = (bytes: number) => {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  const mb = bytes / 1024 / 1024;
+  return `${Number.isInteger(mb) ? mb : mb.toFixed(1)} MB`;
+};
 const today = () => new Date().toISOString().slice(0, 10);
 
 export function UploadDialog({ variant = "button" }: { variant?: "button" | "hero" }) {
@@ -163,7 +167,7 @@ export function UploadDialog({ variant = "button" }: { variant?: "button" | "her
             >
               <UploadCloud className={cn("size-7", dragging ? "text-primary" : "text-muted-foreground")} aria-hidden />
               <span className="text-sm font-medium">{dragging ? "Drop to add" : "Drag CVs here, or choose files"}</span>
-              <span className="text-xs text-muted-foreground">PDF or DOCX · up to {kb(MAX_FILE_BYTES)} each</span>
+              <span className="text-xs text-muted-foreground">PDF or DOCX · up to {size(MAX_FILE_BYTES)} each</span>
               <input
                 id="files"
                 ref={input}
@@ -184,7 +188,7 @@ export function UploadDialog({ variant = "button" }: { variant?: "button" | "her
                   <li key={`${file.name}:${file.size}`} className="flex items-center gap-2 rounded-md border bg-card px-2 py-1.5 text-sm">
                     <FileText className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                     <span className="min-w-0 flex-1 truncate">{file.name}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground tabular-nums">{kb(file.size)}</span>
+                    <span className="shrink-0 text-xs text-muted-foreground tabular-nums">{size(file.size)}</span>
                     {!busy && (
                       <button
                         type="button"

@@ -77,10 +77,25 @@ Compares the imported 50 with the manual scoring pass in `calibration/manual-sco
 
 Each draft sends at most once: the send claims the draft row before calling Resend, and the draft id is Resend's idempotency key.
 
+## Clean data and demo data
+
+The database can be switched between empty (to try the UI from scratch) and the 50-CV demo set, without re-reading CVs with the AI:
+
+```bash
+npm run data:status                    # row counts
+npm run data:backup                    # save everything to backups/demo.sql (gitignored; it holds real CV data)
+npm run data:reset -- --yes            # empty every table (the schema stays)
+npm run data:restore -- demo --yes     # empty, then load backups/demo.sql
+```
+
+On an empty database the dashboard shows a get-started screen. Upload CVs from the dialog; set "CV written as of" when a CV's "Present" is not today (the `pm_*` and `spm_*` samples are written as of 2025-02-01).
+
 ## Tests
 
 ```bash
 npm test          # unit and database tests (needs the Docker stack for *.db.test.ts)
-npm run e2e       # Playwright against the dev server on :3107, using the imported data
+npm run e2e       # Playwright against a production build on :3107 (needs the demo data; specs skip on an empty database)
+E2E_LIVE=1 npm run e2e -- e2e/upload.spec.ts   # uploads a CV through the dialog end to end (one live AI call)
+PW_REUSE=1 npm run e2e                         # reuse an already running server on :3107
 npm run lint
 ```
