@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { differsFromRecommendation, kindFor, parseDecision, sendBlock } from "@/lib/decisions";
+import { decisionStatus, differsFromRecommendation, formatDay, kindFor, parseDecision, sendBlock } from "@/lib/decisions";
 
 describe("parseDecision", () => {
   it("accepts the three decisions and nothing else", () => {
@@ -57,5 +57,26 @@ describe("differsFromRecommendation", () => {
     expect(differsFromRecommendation("shortlisted", "Strong")).toBe(false);
     expect(differsFromRecommendation("declined", "Weak")).toBe(false);
     expect(differsFromRecommendation("on_hold", "Strong")).toBe(false);
+  });
+});
+
+describe("decisionStatus", () => {
+  const when = "2026-10-02T01:30:00.000Z";
+  it("says nothing is sent while not decided", () => {
+    expect(decisionStatus(null)).toBe("Not decided. No email will be sent until you decide and click Send.");
+  });
+  it("names the decision, the date and what happens next", () => {
+    expect(decisionStatus("shortlisted", when)).toBe(
+      "You shortlisted this candidate on 2 Oct 2026. An interview invite is ready to review and send.",
+    );
+    expect(decisionStatus("declined", when)).toBe(
+      "You declined this candidate on 2 Oct 2026. A respectful rejection is ready to review and send.",
+    );
+    expect(decisionStatus("on_hold", when)).toBe(
+      "You put this candidate on hold on 2 Oct 2026. No email is sent while they are on hold.",
+    );
+  });
+  it("formats days in UTC", () => {
+    expect(formatDay("2026-12-31T23:59:00.000Z")).toBe("31 Dec 2026");
   });
 });

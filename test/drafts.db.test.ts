@@ -127,8 +127,11 @@ describe("the human decision gates sending", () => {
   it("keeps the latest decision, and clearing returns to not decided", async () => {
     const id = await scoredCandidate("2025-02-01");
     await setDecision(id, "pm", "shortlisted", "  strong referral  ");
-    await setDecision(id, "pm", "on_hold");
-    expect(await getDecision(id, "pm")).toMatchObject({ decision: "on_hold", note: null });
+    expect((await getDecision(id, "pm"))?.note).toBe("strong referral");
+    await setDecision(id, "pm", "on_hold"); // no note given: the stored one is kept
+    expect(await getDecision(id, "pm")).toMatchObject({ decision: "on_hold", note: "strong referral" });
+    await setDecision(id, "pm", "on_hold", ""); // an empty note clears it
+    expect((await getDecision(id, "pm"))?.note).toBeNull();
     await setDecision(id, "pm", "shortlisted", "  strong referral  ");
     expect((await getDecision(id, "pm"))?.note).toBe("strong referral");
     await clearDecision(id, "pm");

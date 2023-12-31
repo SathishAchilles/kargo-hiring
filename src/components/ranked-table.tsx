@@ -1,7 +1,9 @@
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { DecisionBadge } from "@/components/decision-badge";
+import { DecisionButtons } from "@/components/decision-buttons";
 import { ChipRow } from "@/components/insight-chip";
+import { RadarPreviewLink, RadarPreviewTotal, type RadarData } from "@/components/radar-preview";
 import { ScoreBar } from "@/components/score-bar";
 import { ScoreRing } from "@/components/score-ring";
 import { TierBadge } from "@/components/tier-badge";
@@ -22,6 +24,17 @@ const EMAIL_LABEL: Record<string, string> = {
 };
 
 type Sort = { key: SortKey; dir: SortDir };
+
+const radarFor = (row: DashboardRow, criteria: { id: string; name: string }[]): RadarData => ({
+  name: row.name,
+  total: row.total,
+  tier: row.tier,
+  criteria: row.subScores.map((item) => ({
+    id: item.criterion,
+    name: criteria.find((c) => c.id === item.criterion)?.name ?? "",
+    score: item.score,
+  })),
+});
 
 // Top three get a quiet medal tone; the number is still the visible text.
 const MEDAL: Record<number, string> = {
@@ -117,6 +130,7 @@ export function RankedTable({
             </TableHead>
             <TableHead className="sticky top-0 z-10 bg-muted/95 px-2 text-xs font-medium text-muted-foreground backdrop-blur">
               Your decision
+              <span className="sr-only"> (shortlist, on hold or decline from here)</span>
             </TableHead>
             <TableHead className="sticky top-0 z-10 bg-muted/95 px-2 text-xs font-medium text-muted-foreground backdrop-blur">
               Email
@@ -134,9 +148,11 @@ export function RankedTable({
                 <RankBadge rank={row.rank} />
               </TableCell>
               <TableCell className="px-2 py-3 whitespace-normal">
-                <Link href={`/candidates/${row.id}?from=${role}`} className="font-medium hover:underline">
-                  {row.name}
-                </Link>
+                <RadarPreviewLink
+                  href={`/candidates/${row.id}?from=${role}`}
+                  data={radarFor(row, criteria)}
+                  className="font-medium hover:underline"
+                />
                 <p className="text-xs text-muted-foreground">Applied {ROLE_LABEL[row.appliedRole]}</p>
               </TableCell>
               {row.subScores.map((item) => (
@@ -146,7 +162,9 @@ export function RankedTable({
               ))}
               <TableCell className="px-2 py-3">
                 <div className="flex flex-col items-end gap-1">
-                  <ScoreRing total={row.total} tier={row.tier} />
+                  <RadarPreviewTotal data={radarFor(row, criteria)}>
+                    <ScoreRing total={row.total} tier={row.tier} />
+                  </RadarPreviewTotal>
                   <TierBadge tier={row.tier} />
                 </div>
               </TableCell>
@@ -159,7 +177,10 @@ export function RankedTable({
                 <ChipRow {...visibleChips(row.chips, 3)} />
               </TableCell>
               <TableCell className="px-2 py-3">
-                <DecisionBadge decision={row.decision} />
+                <div className="flex flex-col items-start gap-1.5">
+                  <DecisionBadge decision={row.decision} />
+                  <DecisionButtons candidateId={row.id} role={role} current={row.decision} note={row.decisionNote} variant="row" />
+                </div>
               </TableCell>
               <TableCell className="px-2 py-3 text-xs whitespace-nowrap">{EMAIL_LABEL[row.emailStatus]}</TableCell>
             </TableRow>
@@ -189,7 +210,9 @@ export function RankedTable({
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1">
-                <ScoreRing total={row.total} tier={row.tier} size="sm" />
+                <RadarPreviewTotal data={radarFor(row, criteria)}>
+                  <ScoreRing total={row.total} tier={row.tier} size="sm" />
+                </RadarPreviewTotal>
                 <TierBadge tier={row.tier} />
               </div>
             </div>
@@ -204,8 +227,9 @@ export function RankedTable({
             <div className="mt-3">
               <ChipRow {...visibleChips(row.chips, 3)} />
             </div>
-            <div className="mt-3 border-t pt-2">
+            <div className="mt-3 space-y-2 border-t pt-2">
               <DecisionBadge decision={row.decision} />
+              <DecisionButtons candidateId={row.id} role={role} current={row.decision} note={row.decisionNote} variant="card" />
             </div>
           </li>
         ))}

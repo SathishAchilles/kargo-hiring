@@ -12,6 +12,7 @@ import { emailMode } from "@/lib/email/send";
 import { parseRole } from "@/lib/intake/validate";
 import { RUBRICS } from "@/lib/scoring/rubric";
 import { tierFor } from "@/lib/scoring/score";
+import { RADAR_CAPTION } from "@/lib/radar";
 import { isProductRole } from "@/lib/scoring/years";
 import { ROLE_LABEL, type RoleKey, type Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -163,10 +164,13 @@ export default async function CandidatePage({
           <h2 className="text-lg font-semibold">Why {score.total} for {ROLE_LABEL[role]}</h2>
           <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
             <div className="anim-fade-up flex flex-col items-center gap-5 rounded-xl border bg-card p-4 shadow-xs sm:flex-row">
-              <RadarChart
-                scores={score.subScores.map((item) => item.score)}
-                labels={score.subScores.map((item) => item.criterion)}
-              />
+              <div className="flex shrink-0 flex-col items-center gap-1">
+                <RadarChart
+                  scores={score.subScores.map((item) => item.score)}
+                  labels={score.subScores.map((item) => item.criterion)}
+                />
+                <p className="max-w-52 text-center text-[11px] leading-snug text-muted-foreground">{RADAR_CAPTION}</p>
+              </div>
               <div className="min-w-0 flex-1 text-center sm:text-left">
                 <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">AI recommendation</p>
                 <p className="mt-1 flex flex-wrap items-center justify-center gap-2 text-xl font-semibold tracking-tight sm:justify-start">

@@ -26,6 +26,7 @@ export type DashboardRow = {
   suggestOther: boolean;
   // The founder's call for this role; null until they decide.
   decision: Decision | null;
+  decisionNote: string | null;
 };
 
 export type DecisionFilter = Decision | "undecided";
@@ -73,11 +74,11 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
     : [];
   const decisionRows = ids.length
     ? await db
-        .select({ candidateId: decisions.candidateId, decision: decisions.decision })
+        .select({ candidateId: decisions.candidateId, decision: decisions.decision, note: decisions.note })
         .from(decisions)
         .where(eq(decisions.role, role))
     : [];
-  const decided = new Map(decisionRows.map((row) => [row.candidateId, row.decision]));
+  const decided = new Map(decisionRows.map((row) => [row.candidateId, row]));
   const emailStatus = new Map<string, DraftStatus>();
   for (const draft of draftRows) if (!emailStatus.has(draft.candidateId)) emailStatus.set(draft.candidateId, draft.status);
 
@@ -101,7 +102,8 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
       flagTypes: mine.map((flag) => flag.type),
       emailStatus: emailStatus.get(row.id) ?? "none",
       suggestOther: row.score.suggestOther,
-      decision: decided.get(row.id) ?? null,
+      decision: decided.get(row.id)?.decision ?? null,
+      decisionNote: decided.get(row.id)?.note ?? null,
       chips: trimChips(
         chipsFor({
           evidence: row.record,

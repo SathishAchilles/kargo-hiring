@@ -1,23 +1,17 @@
 "use client";
 
-import { CircleCheck, CircleMinus, CirclePause, Info, type LucideIcon } from "lucide-react";
+import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { decide, undecide } from "@/app/actions/decisions";
 import { DecisionBadge } from "@/components/decision-badge";
+import { DecisionButtons } from "@/components/decision-buttons";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { differsFromRecommendation } from "@/lib/decisions";
-import { DECISION_LABEL, ROLE_LABEL, TIER_LABEL, type Decision, type RoleKey, type Tier } from "@/lib/types";
-import { cn } from "@/lib/utils";
-
-const CHOICES: { value: Decision; verb: string; hint: string; icon: LucideIcon; active: string }[] = [
-  { value: "shortlisted", verb: "Shortlist", hint: "Send an interview invite", icon: CircleCheck, active: "border-emerald-600 bg-emerald-600 text-white" },
-  { value: "on_hold", verb: "Put on hold", hint: "Decide later, no email", icon: CirclePause, active: "border-amber-500 bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-100" },
-  { value: "declined", verb: "Decline", hint: "Send a respectful rejection", icon: CircleMinus, active: "border-rose-500 bg-rose-100 text-rose-950 dark:bg-rose-950 dark:text-rose-100" },
-];
+import { decisionStatus, differsFromRecommendation } from "@/lib/decisions";
+import { ROLE_LABEL, TIER_LABEL, type Decision, type RoleKey, type Tier } from "@/lib/types";
 
 // UTC and fixed format, so the server and the browser render the same text.
 const stamp = (iso: string) => `${iso.slice(0, 10)} ${iso.slice(11, 16)} UTC`;
@@ -53,34 +47,12 @@ export function DecisionPanel(props: {
         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Your decision · {ROLE_LABEL[role]}</p>
         <DecisionBadge decision={current?.decision ?? null} />
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">
-        The AI recommends; you decide. Nothing is shortlisted or emailed until you choose.
+      <p role="status" className="mt-3 text-base font-medium">
+        {decisionStatus(current?.decision ?? null, current?.decidedAt)}
       </p>
+      <p className="mt-1 text-sm text-muted-foreground">The AI recommends; you decide. Choose one:</p>
 
-      <div role="group" aria-label="Decision" className="mt-3 grid gap-2">
-        {CHOICES.map(({ value, verb, hint, icon: Icon, active }) => {
-          const chosen = current?.decision === value;
-          return (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={chosen}
-              disabled={pending}
-              onClick={() => run(`${DECISION_LABEL[value]}.`, () => decide(candidateId, role, value, note))}
-              className={cn(
-                "flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60",
-                chosen ? cn(active, "font-medium") : "hover:bg-muted",
-              )}
-            >
-              <Icon className="size-4 shrink-0" aria-hidden />
-              <span className="min-w-0">
-                <span className="block">{verb}</span>
-                <span className={cn("block text-xs", chosen ? "opacity-80" : "text-muted-foreground")}>{hint}</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      <DecisionButtons candidateId={candidateId} role={role} current={current?.decision ?? null} variant="panel" note={note} />
 
       <div className="mt-3 space-y-1.5">
         <Label htmlFor="decision-note">Note (optional, only you see it)</Label>
