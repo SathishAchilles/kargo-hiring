@@ -100,3 +100,21 @@ export function chipsFor(input: ChipInput): Chip[] {
   }
   return chips;
 }
+
+const TONE_ORDER: Record<ChipTone, number> = { bad: 0, warn: 1, good: 2, neutral: 3 };
+
+// What to read first when space is short: problems, then cautions, then strengths, then context.
+// Stable, so chips of the same tone keep their natural order.
+export function prioritizeChips(chips: Chip[]): Chip[] {
+  return chips
+    .map((chip, index) => ({ chip, index }))
+    .sort((a, b) => TONE_ORDER[a.chip.tone] - TONE_ORDER[b.chip.tone] || a.index - b.index)
+    .map(({ chip }) => chip);
+}
+
+// Splits into the chips shown inline and the rest ("+N"). The years chip is dropped here
+// because the table has its own years column.
+export function visibleChips(chips: Chip[], max: number): { shown: Chip[]; hidden: Chip[] } {
+  const ordered = prioritizeChips(chips.filter((chip) => chip.key !== "years"));
+  return { shown: ordered.slice(0, max), hidden: ordered.slice(max) };
+}

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { signOut } from "@/app/signin/actions";
 import { AutoRefresh } from "@/components/auto-refresh";
-import { ChipRow } from "@/components/insight-chip";
-import { TierBadge } from "@/components/tier-badge";
+import { ProcessingList } from "@/components/processing-list";
+import { RankedTable } from "@/components/ranked-table";
 import { Button } from "@/components/ui/button";
 import { UploadDialog } from "@/components/upload-dialog";
 import { loadDashboard, type Filters } from "@/lib/dashboard/queries";
+import { parseSort, SORT_KEYS } from "@/lib/dashboard/sort";
 import { parseRole } from "@/lib/intake/validate";
 import { RUBRICS } from "@/lib/scoring/rubric";
 import { ROLE_LABEL, type FlagType, type RoleKey, type Tier } from "@/lib/types";
@@ -21,15 +22,6 @@ const FLAG_LABEL: Record<FlagType, string> = {
   education_overlap: "Job during full-time degree",
   stated_vs_dated: "Stated vs dated years",
 };
-const EMAIL_LABEL: Record<string, string> = {
-  none: "—",
-  drafted: "Drafted",
-  needs_manual_edit: "Needs edit",
-  sending: "Sending",
-  sent: "Sent",
-  failed: "Failed",
-};
-
 type Search = Record<string, string | string[] | undefined>;
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
@@ -51,7 +43,20 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     flag: flag && flag in FLAG_LABEL ? flag : undefined,
     suggest: one(search.suggest) === "1",
     top: one(search.top) === "1",
+    sort: SORT_KEYS.find((key) => key === one(search.sort)),
+    dir: one(search.dir) === "asc" || one(search.dir) === "desc" ? (one(search.dir) as "asc" | "desc") : undefined,
   };
+  const sort = parseSort(filters.sort, filters.dir);
+  // Sorting keeps whatever filters are active.
+  const active: Record<string, string | undefined> = {
+    tier: filters.tier,
+    applied: filters.applied,
+    flag: filters.flag,
+    suggest: filters.suggest ? "1" : undefined,
+    top: filters.top ? "1" : undefined,
+  };
+  const sortHref = (next: { key: string; dir: string }) =>
+    href(role, { ...active, ...(next.key === "rank" && next.dir === "asc" ? {} : { sort: next.key, dir: next.dir }) });
   const { rows, all, cohort, pending } = await loadDashboard(role, filters);
   const criteria = RUBRICS[role];
   const filtered = Boolean(filters.tier || filters.applied || filters.flag || filters.suggest || filters.top);
@@ -170,96 +175,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         </div>
       </div>
 
-      {/* Desktop table */}
-      <div className="mt-3 hidden overflow-x-auto rounded-lg border md:block">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-            <tr>
-              <th className="px-3 py-2 font-medium">#</th>
-              <th className="px-3 py-2 font-medium">Candidate</th>
-              {criteria.map((criterion) => (
-                <th key={criterion.id} className="px-2 py-2 text-center font-medium" title={criterion.name}>
-                  {criterion.id}
-                </th>
-              ))}
-              <th className="px-3 py-2 text-right font-medium">Total</th>
-              <th className="px-3 py-2 font-medium">Insights</th>
-              <th className="px-3 py-2 font-medium">Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id} className="border-t align-top">
-                <td className="px-3 py-3 tabular-nums text-muted-foreground">{row.rank}</td>
-                <td className="px-3 py-3">
-                  <Link href={`/candidates/${row.id}?role=${role}`} className="font-medium hover:underline">
-                    {row.name}
-                  </Link>
-                  <p className="text-xs text-muted-foreground">Applied {ROLE_LABEL[row.appliedRole]}</p>
-                </td>
-                {row.subScores.map((item) => (
-                  <td key={item.criterion} className="px-2 py-3 text-center tabular-nums">
-                    <span className={cn(item.score >= 4 && "font-semibold", item.score <= 2 && "text-muted-foreground")}>
-                      {item.score}
-                    </span>
-                  </td>
-                ))}
-                <td className="px-3 py-3 text-right">
-                  <div className="text-base font-semibold tabular-nums">{row.total}</div>
-                  <TierBadge tier={row.tier} />
-                </td>
-                <td className="max-w-md px-3 py-3">
-                  <ChipRow chips={row.chips} />
-                </td>
-                <td className="px-3 py-3 text-xs whitespace-nowrap">{EMAIL_LABEL[row.emailStatus]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Phone list */}
-      <ul className="mt-3 space-y-3 md:hidden">
-        {rows.map((row) => (
-          <li key={row.id} className="rounded-lg border p-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">#{row.rank}</p>
-                <Link href={`/candidates/${row.id}?role=${role}`} className="font-medium break-words hover:underline">
-                  {row.name}
-                </Link>
-              </div>
-              <div className="shrink-0 text-right">
-                <div className="text-lg font-semibold tabular-nums">{row.total}</div>
-                <TierBadge tier={row.tier} />
-              </div>
-            </div>
-            <div className="mt-2">
-              <ChipRow chips={row.chips} />
-            </div>
-          </li>
-        ))}
-      </ul>
+      <RankedTable
+        rows={rows}
+        criteria={criteria.map(({ id, name }) => ({ id, name }))}
+        role={role}
+        sort={sort}
+        hrefFor={sortHref}
+      />
 
       {rows.length === 0 && <p className="mt-6 text-sm text-muted-foreground">No candidates match.</p>}
 
-      {pending.length > 0 && (
-        <section className="mt-8" aria-label="Processing">
-          <h2 className="text-sm font-medium">Not ranked yet</h2>
-          <ul className="mt-2 divide-y rounded-lg border text-sm">
-            {pending.map((row) => (
-              <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
-                <Link href={`/candidates/${row.id}`} className="break-all hover:underline">
-                  {row.fileName}
-                </Link>
-                <span className={cn("text-xs", row.status === "failed" ? "text-destructive" : "text-muted-foreground")}>
-                  {row.status === "failed" ? `failed: ${row.reason ?? "unknown"}` : row.status.replace("_", " ")}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <ProcessingList pending={pending} />
     </main>
   );
 }
