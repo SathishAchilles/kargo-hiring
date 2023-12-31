@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { signOut } from "@/app/signin/actions";
+import { AppHeader } from "@/components/app-header";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { CohortPanel, FLAG_LABEL } from "@/components/cohort-panel";
+import { EmptyState } from "@/components/empty-state";
 import { ProcessingList } from "@/components/processing-list";
 import { RankedTable } from "@/components/ranked-table";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { UploadDialog } from "@/components/upload-dialog";
 import { loadDashboard, type Filters } from "@/lib/dashboard/queries";
@@ -15,13 +19,6 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 const TIERS: Tier[] = ["Shortlist", "Interview", "Hold", "Decline"];
-const FLAG_LABEL: Record<FlagType, string> = {
-  duplicate: "Duplicate CV",
-  placeholder: "Placeholder text",
-  identity_mismatch: "Profile link name",
-  education_overlap: "Job during full-time degree",
-  stated_vs_dated: "Stated vs dated years",
-};
 type Search = Record<string, string | string[] | undefined>;
 const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
 
@@ -65,20 +62,15 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 md:px-6">
       <AutoRefresh active={processing} />
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Kargo hiring</h1>
-          <p className="text-sm text-muted-foreground">Every CV is scored against both job descriptions.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <UploadDialog />
-          <form action={signOut}>
-            <Button type="submit" variant="ghost">
-              Sign out
-            </Button>
-          </form>
-        </div>
-      </header>
+      <AppHeader>
+        <UploadDialog />
+        <ThemeToggle />
+        <form action={signOut}>
+          <Button type="submit" variant="ghost">
+            Sign out
+          </Button>
+        </form>
+      </AppHeader>
 
       <nav className="mt-6 flex gap-1 border-b" aria-label="Role">
         {(["pm", "spm"] as RoleKey[]).map((key) => (
@@ -96,63 +88,26 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         ))}
       </nav>
 
-      <div className="flex flex-col">
-      <section aria-label="Cohort insights" className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 max-md:order-6">
-        <div className="rounded-lg border p-4">
-          <p className="text-xs font-medium text-muted-foreground uppercase">Tiers</p>
-          <ul className="mt-2 space-y-1 text-sm">
-            {TIERS.map((value) => (
-              <li key={value} className="flex justify-between">
-                <Link className="hover:underline" href={href(role, { tier: value })}>
-                  {value}
-                </Link>
-                <span className="tabular-nums">{cohort.tiers[value]}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-lg border p-4">
-          <p className="text-xs font-medium text-muted-foreground uppercase">Averages</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">{cohort.averageAll}</p>
-          <p className="text-sm text-muted-foreground">all {cohort.count} candidates</p>
-          <Link className="mt-1 block text-sm hover:underline" href={href(role, { applied: role })}>
-            {cohort.averageApplicants ?? "—"} for {ROLE_LABEL[role]} applicants
-          </Link>
-        </div>
-        <div className="rounded-lg border p-4">
-          <p className="text-xs font-medium text-muted-foreground uppercase">At the top</p>
-          {cohort.tiedAtTop > 1 ? (
-            <Link className="mt-2 block text-sm hover:underline" href={href(role, { top: "1" })}>
-              <span className="text-2xl font-semibold tabular-nums">{cohort.tiedAtTop}</span> tied at {cohort.topTotal} — ranked
-              by tie-break
-            </Link>
-          ) : (
-            <p className="mt-2 text-sm">No tie at the top ({cohort.topTotal ?? "—"})</p>
-          )}
-          {cohort.scarcest && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              Scarcest: <span className="font-medium text-foreground">{cohort.scarcest.criterion}</span>{" "}
-              {criteria.find((c) => c.id === cohort.scarcest?.criterion)?.name.toLowerCase()} — {cohort.scarcest.fives} at 5
+      {all === 0 ? (
+        pending.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <>
+            <p className="anim-fade-up mt-8 rounded-xl border bg-card p-4 text-sm text-muted-foreground shadow-xs">
+              Your first CVs are being read and scored. They will rank here as soon as they finish.
             </p>
-          )}
-        </div>
-        <div className="rounded-lg border p-4">
-          <p className="text-xs font-medium text-muted-foreground uppercase">Check before shortlisting</p>
-          <Link className="mt-2 block text-sm hover:underline" href={href(role, { suggest: "1" })}>
-            {cohort.suggestOther} suggested for the other role
-          </Link>
-          <ul className="mt-1 space-y-0.5 text-sm">
-            {(Object.entries(cohort.flags) as [FlagType, number][]).map(([type, count]) => (
-              <li key={type}>
-                <Link className="hover:underline" href={href(role, { flag: type })}>
-                  {count} × {FLAG_LABEL[type]}
-                </Link>
-              </li>
-            ))}
-            {Object.keys(cohort.flags).length === 0 && <li className="text-muted-foreground">No integrity flags</li>}
-          </ul>
-        </div>
-      </section>
+            <ProcessingList pending={pending} />
+          </>
+        )
+      ) : (
+      <div className="flex flex-col">
+      <CohortPanel
+        cohort={cohort}
+        criteria={criteria.map(({ id, name }) => ({ id, name }))}
+        role={role}
+        hrefFor={(next) => href(role, next)}
+        className="mt-5 max-md:order-6"
+      />
 
       <div className="mt-6 space-y-2">
         <p className="text-sm text-muted-foreground">
@@ -205,6 +160,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         <ProcessingList pending={pending} />
       </div>
       </div>
+      )}
     </main>
   );
 }

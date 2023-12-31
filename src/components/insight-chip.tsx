@@ -1,7 +1,7 @@
 "use client";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { visibleChips, type Chip, type ChipTone } from "@/lib/dashboard/chips";
+import type { Chip, ChipTone } from "@/lib/dashboard/chips";
 import { cn } from "@/lib/utils";
 
 const TONE: Record<ChipTone, string> = {
@@ -44,19 +44,9 @@ export function InsightChip({ chip }: { chip: Chip }) {
   );
 }
 
-// Shows the most important chips inline; the rest sit behind "+N", each with its evidence.
+// Shows the chips chosen on the server inline; the rest sit behind "+N", each with its evidence.
 // Tapping (or hovering) opens the popover, so nothing depends on hover alone.
-export function ChipRow({ chips, max }: { chips: Chip[]; max?: number }) {
-  if (max === undefined) {
-    return (
-      <div className="flex flex-wrap gap-2">
-        {chips.map((chip) => (
-          <InsightChip key={chip.key} chip={chip} />
-        ))}
-      </div>
-    );
-  }
-  const { shown, hidden } = visibleChips(chips, max);
+export function ChipRow({ shown, hidden }: { shown: Chip[]; hidden: Chip[] }) {
   return (
     <div className="flex flex-wrap gap-2">
       {shown.map((chip) => (

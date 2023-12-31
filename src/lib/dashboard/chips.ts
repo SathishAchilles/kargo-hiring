@@ -118,3 +118,16 @@ export function visibleChips(chips: Chip[], max: number): { shown: Chip[]; hidde
   const ordered = prioritizeChips(chips.filter((chip) => chip.key !== "years"));
   return { shown: ordered.slice(0, max), hidden: ordered.slice(max) };
 }
+
+// The list view ships every row's chips to the browser, so keep only what it shows: the years
+// live in their own column (no years chip), and each chip's evidence is capped in count and length.
+export function trimChips(chips: Chip[], maxEvidence = 4, maxLength = 220): Chip[] {
+  return chips
+    .filter((chip) => chip.key !== "years")
+    .map((chip) => ({
+      ...chip,
+      evidence: chip.evidence
+        .slice(0, maxEvidence)
+        .map((line) => (line.length > maxLength ? `${line.slice(0, maxLength - 1)}…` : line)),
+    }));
+}

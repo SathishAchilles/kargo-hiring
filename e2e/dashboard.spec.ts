@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { signIn } from "./session";
+import { hasData, NEEDS_DATA, signIn } from "./session";
 
-test.beforeEach(async ({ context }) => {
+test.beforeEach(async ({ context, page }) => {
   await signIn(context);
+  test.skip(!(await hasData(page)), NEEDS_DATA);
 });
 
 async function rankedNames(page: import("@playwright/test").Page, role: "pm" | "spm") {
@@ -46,7 +47,7 @@ test("the cohort panel links ties at the top to a filtered list", async ({ page 
   if (await tie.count()) {
     await tie.click();
     await expect(page).toHaveURL(/top=1/);
-    const totals = await page.locator("table tbody tr td:nth-child(8) div").allTextContents();
+    const totals = await page.locator("table tbody tr td:nth-child(8) [data-testid=total]").allTextContents();
     expect(new Set(totals).size).toBe(1);
   }
 });
@@ -158,4 +159,18 @@ test.describe("phone", () => {
     const detailOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(detailOverflow).toBeLessThanOrEqual(0);
   });
+});
+
+test("totals are shown as rings and the cohort panel charts the score distribution", async ({ page }) => {
+  await page.goto("/?role=pm");
+  await expect(page.locator("table tbody tr td:nth-child(8) [data-testid=total]")).toHaveCount(50);
+  await expect(page.getByRole("img", { name: /^Score distribution: 20 to 29: \d+/ })).toBeVisible();
+});
+
+test("the top three ranks get a medal and the rest do not", async ({ page }) => {
+  await page.goto("/?role=pm");
+  const ranks = page.locator("table tbody tr td:first-child > span");
+  await expect(ranks.nth(0)).toHaveClass(/ring-1/);
+  await expect(ranks.nth(2)).toHaveClass(/ring-1/);
+  await expect(ranks.nth(3)).not.toHaveClass(/ring-1/);
 });

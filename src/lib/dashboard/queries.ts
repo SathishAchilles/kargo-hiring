@@ -6,7 +6,7 @@ import { verificationQuestion } from "@/lib/drafts/brief";
 import { rank } from "@/lib/scoring/rank";
 import { isMumbai } from "@/lib/scoring/score";
 import type { DraftStatus, FlagType, RoleKey, Tier } from "@/lib/types";
-import { chipsFor, type Chip } from "./chips";
+import { chipsFor, trimChips, type Chip } from "./chips";
 import { parseSort, sortRows, type SortDir, type SortKey } from "./sort";
 import { cohortFor, type Cohort } from "./cohort";
 
@@ -88,17 +88,19 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
       flagTypes: mine.map((flag) => flag.type),
       emailStatus: emailStatus.get(row.id) ?? "none",
       suggestOther: row.score.suggestOther,
-      chips: chipsFor({
-        evidence: row.record,
-        productYears: row.score.productYears,
-        totalYears: row.score.totalYears,
-        tieBrokenBy: row.tieBrokenBy,
-        suggestedRole: row.score.suggestedRole,
-        suggestOther: row.score.suggestOther,
-        flagCount: mine.length,
-        flagSummaries: mine.map((flag) => verificationQuestion({ type: flag.type, detail: flag.detail })),
-        isMumbai: isMumbai(row.record.location.text),
-      }),
+      chips: trimChips(
+        chipsFor({
+          evidence: row.record,
+          productYears: row.score.productYears,
+          totalYears: row.score.totalYears,
+          tieBrokenBy: row.tieBrokenBy,
+          suggestedRole: row.score.suggestedRole,
+          suggestOther: row.score.suggestOther,
+          flagCount: mine.length,
+          flagSummaries: mine.map((flag) => verificationQuestion({ type: flag.type, detail: flag.detail })),
+          isMumbai: isMumbai(row.record.location.text),
+        }),
+      ),
     };
   });
 
@@ -165,3 +167,25 @@ export async function loadCandidate(id: string) {
 }
 
 export type CandidateView = NonNullable<Awaited<ReturnType<typeof loadCandidate>>>;
+
+export type Neighbour = { id: string; name: string };
+export type Neighbours = { position: number; of: number; prev: Neighbour | null; next: Neighbour | null };
+
+// Where this candidate sits in the ranking for a role, and who is either side, so the
+// founder can step through the list without going back to it.
+export async function neighbours(id: string, role: RoleKey): Promise<Neighbours | null> {
+  const rows = await db
+    .select({ id: scores.candidateId, total: scores.total, tieKey: scores.tieKey })
+    .from(scores)
+    .where(eq(scores.role, role));
+  const ordered = rank(rows, role).map((row) => row.id);
+  const index = ordered.indexOf(id);
+  if (index === -1) return null;
+  const wanted = [ordered[index - 1], ordered[index + 1]].filter((value): value is string => Boolean(value));
+  const names = wanted.length
+    ? await db.select({ id: candidatePii.candidateId, name: candidatePii.name }).from(candidatePii).where(inArray(candidatePii.candidateId, wanted))
+    : [];
+  const pick = (target: string | undefined): Neighbour | null =>
+    target ? { id: target, name: names.find((row) => row.id === target)?.name ?? "Candidate" } : null;
+  return { position: index + 1, of: ordered.length, prev: pick(ordered[index - 1]), next: pick(ordered[index + 1]) };
+}

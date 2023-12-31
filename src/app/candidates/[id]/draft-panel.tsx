@@ -1,6 +1,6 @@
 "use client";
 
-import { FlaskConical, Mail } from "lucide-react";
+import { CircleCheck, FlaskConical, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { openDraft, regenerateDraft, saveDraft, sendDraftAction } from "@/app/actions/drafts";
@@ -123,7 +123,8 @@ export function DraftPanel(props: {
           <h2 className="text-lg font-semibold">
             Email · {draft.kind === "invite" ? "interview invite" : "rejection"}
           </h2>
-          <span className="text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            {sent && <CircleCheck aria-hidden className="anim-pop size-4 text-emerald-600 dark:text-emerald-400" />}
             {sent
               ? `Sent ${draft.sentAt ? new Date(draft.sentAt).toLocaleString() : ""} to ${draft.sentTo}`
               : draft.status === "needs_manual_edit"

@@ -12,7 +12,7 @@ test("candidate API rejects requests without a session", async ({ request }) => 
 });
 
 test("wrong passcode is refused", async ({ page }) => {
-  await page.goto("/signin");
+  await page.goto("/signin", { waitUntil: "networkidle" });
   await page.getByLabel("Passcode").fill("definitely-wrong");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByText("Wrong passcode.")).toBeVisible();

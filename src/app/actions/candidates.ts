@@ -5,7 +5,7 @@ import { after } from "next/server";
 import { requireFounder } from "@/lib/auth/guard";
 import { correctPersonalDetails, createCandidate, updateCandidateSettings } from "@/lib/candidates/service";
 import { processCandidate, reprocessFrom } from "@/lib/pipeline";
-import { parseRole, validateFile } from "@/lib/intake/validate";
+import { parseAsOfDate, parseRole, validateFile } from "@/lib/intake/validate";
 
 export type UploadResult =
   | { ok: true; name: string; id: string; duplicate: boolean }
@@ -24,13 +24,17 @@ export async function uploadCv(formData: FormData): Promise<UploadResult> {
   if (!(file instanceof File)) return { ok: false, name, reason: "No file received." };
   const verdict = validateFile({ name: file.name, type: file.type, size: file.size });
   if (!verdict.ok) return { ok: false, name, reason: verdict.reason };
+  // Optional: the date the CV was written, for CVs whose "Present" is not today.
+  const asOfRaw = String(formData.get("asOf") ?? "").trim();
+  const asOfDate = asOfRaw === "" ? today() : parseAsOfDate(asOfRaw);
+  if (!asOfDate) return { ok: false, name, reason: "Enter a valid as-of date (not in the future)." };
 
   const { id, created } = await createCandidate({
     bytes: new Uint8Array(await file.arrayBuffer()),
     fileName: file.name,
     fileMime: file.type || (verdict.kind === "pdf" ? "application/pdf" : "application/octet-stream"),
     appliedRole: role,
-    asOfDate: today(),
+    asOfDate,
   });
   if (created) after(() => processCandidate(id));
   revalidatePath("/");

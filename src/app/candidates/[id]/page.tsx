@@ -1,15 +1,17 @@
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CandidateNav } from "@/components/candidate-nav";
 import { CopyButton } from "@/components/copy-button";
+import { RadarChart } from "@/components/radar-chart";
 import { ScoreBar } from "@/components/score-bar";
 import { TierBadge } from "@/components/tier-badge";
-import { loadCandidate } from "@/lib/dashboard/queries";
+import { loadCandidate, neighbours } from "@/lib/dashboard/queries";
 import { emailMode } from "@/lib/email/send";
 import { parseRole } from "@/lib/intake/validate";
 import { RUBRICS } from "@/lib/scoring/rubric";
 import { isProductRole } from "@/lib/scoring/years";
-import { ROLE_LABEL, type RoleKey } from "@/lib/types";
+import { ROLE_LABEL, type RoleKey, type Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { DetailsForm } from "./details-form";
 import { DraftPanel } from "./draft-panel";
@@ -17,6 +19,14 @@ import { RetryButton } from "./retry-button";
 import { SettingsForm } from "./settings-form";
 
 export const dynamic = "force-dynamic";
+
+// What the tier means for the founder; it matches the email the page drafts by default.
+const NEXT_STEP: Record<Tier, { title: string; text: string }> = {
+  Shortlist: { title: "Invite to interview", text: "A strong match for this role. A draft invite is ready below." },
+  Interview: { title: "Worth a conversation", text: "A good match with gaps to probe. The brief lists what to ask." },
+  Hold: { title: "Hold", text: "A partial match. Keep for later, or send a respectful decline." },
+  Decline: { title: "Decline", text: "Not enough of a match for this role right now." },
+};
 
 const FLAG_TITLE: Record<string, string> = {
   duplicate: "Duplicate CV",
@@ -41,6 +51,7 @@ export default async function CandidatePage({
   const { candidate, pii, evidence, scores, flags, drafts } = view;
   const role: RoleKey = parseRole(Array.isArray(search.role) ? search.role[0] : search.role) ?? candidate.appliedRole;
   const score = scores[role];
+  const nav = score ? await neighbours(id, role) : null;
   const mode = (() => {
     try {
       return emailMode();
@@ -52,9 +63,12 @@ export default async function CandidatePage({
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 md:px-6">
       <div className="sticky top-0 z-20 -mx-4 border-b bg-background px-4 pt-3 pb-3 md:-mx-6 md:px-6">
-      <Link href={`/?role=${role}`} className="inline-block min-h-6 text-sm text-muted-foreground hover:underline">
-        ← {ROLE_LABEL[role]} ranking
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Link href={`/?role=${role}`} className="inline-block min-h-6 text-sm text-muted-foreground hover:underline">
+          ← {ROLE_LABEL[role]} ranking
+        </Link>
+        {nav && <CandidateNav neighbours={nav} role={role} />}
+      </div>
 
       <header className="mt-2 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
@@ -136,16 +150,34 @@ export default async function CandidatePage({
       {score && (
         <section className="mt-8">
           <h2 className="text-lg font-semibold">Why {score.total} for {ROLE_LABEL[role]}</h2>
-          <p className="text-sm text-muted-foreground">
-            Product {score.productYears.toFixed(1)} yrs · Total {score.totalYears.toFixed(1)} yrs · suggested role:{" "}
-            {score.suggestedRole.replace("_", " ").replace("pm or spm", "PM or Senior PM")}
-            {score.suggestOther ? " (differs from the applied role)" : ""}
-          </p>
+          <div className="anim-fade-up mt-3 flex flex-col items-center gap-5 rounded-xl border bg-card p-4 shadow-xs sm:flex-row">
+            <RadarChart
+              scores={score.subScores.map((item) => item.score)}
+              labels={score.subScores.map((item) => item.criterion)}
+            />
+            <div className="min-w-0 flex-1 text-center sm:text-left">
+              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Suggested next step</p>
+              <p className="mt-1 flex items-center justify-center gap-2 text-xl font-semibold tracking-tight sm:justify-start">
+                {NEXT_STEP[score.tier].title}
+                <TierBadge tier={score.tier} />
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{NEXT_STEP[score.tier].text}</p>
+              <p className="mt-3 text-sm text-muted-foreground tabular-nums">
+                Product {score.productYears.toFixed(1)} yrs · Total {score.totalYears.toFixed(1)} yrs · suggested role:{" "}
+                {score.suggestedRole.replace("_", " ").replace("pm or spm", "PM or Senior PM")}
+                {score.suggestOther ? " (differs from the applied role)" : ""}
+              </p>
+            </div>
+          </div>
           <ol className="mt-4 space-y-3">
-            {score.subScores.map((item) => {
+            {score.subScores.map((item, itemIndex) => {
               const criterion = RUBRICS[role].find((c) => c.id === item.criterion);
               return (
-                <li key={item.criterion} className="rounded-lg border p-4">
+                <li
+                  key={item.criterion}
+                  className="anim-fade-up rounded-xl border bg-card p-4 shadow-xs"
+                  style={{ animationDelay: `${itemIndex * 50}ms` }}
+                >
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="font-medium">
                       {item.criterion} {criterion?.name}{" "}
