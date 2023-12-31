@@ -10,7 +10,22 @@ export type CohortRow = {
   flagTypes: FlagType[];
 };
 
+export type Bucket = { from: number; to: number; count: number };
+
+// Totals run 20–100; eight buckets of ten, with 90–100 as the last.
+export const BUCKETS = [20, 30, 40, 50, 60, 70, 80, 90] as const;
+
+export function histogram(totals: number[]): Bucket[] {
+  const buckets: Bucket[] = BUCKETS.map((from, index) => ({ from, to: index === BUCKETS.length - 1 ? 100 : from + 9, count: 0 }));
+  for (const total of totals) {
+    const index = Math.min(BUCKETS.length - 1, Math.max(0, Math.floor((total - 20) / 10)));
+    buckets[index].count += 1;
+  }
+  return buckets;
+}
+
 export type Cohort = {
+  histogram: Bucket[];
   count: number;
   tiers: Record<Tier, number>;
   averageAll: number;
@@ -41,6 +56,7 @@ export function cohortFor(rows: CohortRow[], role: RoleKey): Cohort {
   for (const row of rows) for (const type of new Set(row.flagTypes)) flags[type] = (flags[type] ?? 0) + 1;
 
   return {
+    histogram: histogram(rows.map((row) => row.total)),
     count: rows.length,
     tiers,
     averageAll: average(rows.map((row) => row.total)) ?? 0,
