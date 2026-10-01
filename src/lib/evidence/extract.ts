@@ -17,7 +17,7 @@ export async function extractEvidence(redactedText: string, pii: Pii): Promise<V
     user: `CV text:\n\n${redactedText}`,
     schema: wireSchema,
     effort: "high",
-    maxTokens: 16000,
+    maxTokens: 32000,
   });
   return verifyEvidence(toEvidence(wire), redactedText);
 }
