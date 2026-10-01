@@ -3,11 +3,16 @@ import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { db } from "@/db/client";
 import { candidatePii, drafts } from "@/db/schema";
 import { updateCandidateSettings } from "@/lib/candidates/service";
-import { editDraft, sendDraft } from "@/lib/drafts/service";
+import { clearDecision, getDecision, setDecision } from "@/lib/candidates/decisions";
+import { editDraft, ensureDraft, sendDraft } from "@/lib/drafts/service";
+import { setParseForTests } from "@/lib/ai/client";
 import { setSenderForTests, type Sender } from "@/lib/email/send";
 import { cleanup, scoredCandidate } from "./helpers/db";
 
-afterEach(() => setSenderForTests(null));
+afterEach(() => {
+  setSenderForTests(null);
+  setParseForTests(null);
+});
 afterAll(cleanup);
 
 async function insertDraft(candidateId: string) {
@@ -33,6 +38,7 @@ describe("sendDraft", () => {
     const send = vi.fn<Sender>(async () => ({ id: "msg_123" }));
     setSenderForTests(send);
     const id = await scoredCandidate("2025-02-01");
+    await setDecision(id, "pm", "shortlisted");
     const draft = await insertDraft(id);
 
     const results = await Promise.all([sendDraft(draft.id), sendDraft(draft.id)]);
@@ -54,6 +60,7 @@ describe("sendDraft", () => {
     setSenderForTests(send);
     const id = await scoredCandidate("2025-02-01");
     await db.update(candidatePii).set({ emails: [] }).where(eq(candidatePii.candidateId, id));
+    await setDecision(id, "pm", "shortlisted");
     const draft = await insertDraft(id);
     expect(await sendDraft(draft.id)).toEqual({ status: "failed", detail: "add an email address to send" });
     expect(send).not.toHaveBeenCalled();
@@ -70,5 +77,80 @@ describe("edited drafts", () => {
     expect(after.subject).toBe("Edited subject");
     expect(after.editedByFounder).toBe(true);
     expect(after.scoresChanged).toBe(true);
+  });
+});
+
+describe("the human decision gates sending", () => {
+  const sendSpy = () => {
+    const send = vi.fn<Sender>(async () => ({ id: "msg_ok" }));
+    setSenderForTests(send);
+    return send;
+  };
+
+  it("refuses to send before the founder has decided", async () => {
+    const send = sendSpy();
+    const id = await scoredCandidate("2025-02-01");
+    const draft = await insertDraft(id);
+    const outcome = await sendDraft(draft.id);
+    expect(outcome.status).toBe("failed");
+    expect(outcome.detail).toMatch(/^Decide first/);
+    expect(send).not.toHaveBeenCalled();
+    const [row] = await db.select().from(drafts).where(eq(drafts.id, draft.id));
+    expect(row.status).toBe("drafted");
+  });
+
+  it("refuses while on hold and when the draft contradicts the decision", async () => {
+    const send = sendSpy();
+    const id = await scoredCandidate("2025-02-01");
+    const draft = await insertDraft(id); // an invite
+
+    await setDecision(id, "pm", "on_hold");
+    expect((await sendDraft(draft.id)).detail).toMatch(/on hold/);
+
+    await setDecision(id, "pm", "declined");
+    expect((await sendDraft(draft.id)).detail).toBe("Your decision is Declined. Switch the draft to a rejection to send it.");
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("sends once the decision matches the draft", async () => {
+    process.env.EMAIL_MODE = "redirect";
+    process.env.EMAIL_TEST_TO = "founder-test@example.com";
+    process.env.RESEND_FROM = "Kargo <onboarding@resend.dev>";
+    const send = sendSpy();
+    const id = await scoredCandidate("2025-02-01");
+    const draft = await insertDraft(id);
+    await setDecision(id, "pm", "shortlisted");
+    expect(await sendDraft(draft.id)).toEqual({ status: "sent" });
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the latest decision, and clearing returns to not decided", async () => {
+    const id = await scoredCandidate("2025-02-01");
+    await setDecision(id, "pm", "shortlisted", "  strong referral  ");
+    await setDecision(id, "pm", "on_hold");
+    expect(await getDecision(id, "pm")).toMatchObject({ decision: "on_hold", note: null });
+    await setDecision(id, "pm", "shortlisted", "  strong referral  ");
+    expect((await getDecision(id, "pm"))?.note).toBe("strong referral");
+    await clearDecision(id, "pm");
+    expect(await getDecision(id, "pm")).toBeNull();
+    expect(await getDecision(id, "spm")).toBeNull();
+  });
+
+  it("drafts the kind the decision calls for, over the AI's recommendation", async () => {
+    const network = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      parsed_output: {
+        summary: "s",
+        probes: [{ criterion: "P1", question: "q" }],
+        subject: "Kargo",
+        body: "Hi {{first_name}},\n\nYour exception alerts stood out.",
+        referencedFactIds: ["F2"],
+      },
+    }));
+    setParseForTests(network as never);
+    const id = await scoredCandidate("2025-02-01");
+    await setDecision(id, "pm", "declined");
+    const draft = await ensureDraft(id, "pm");
+    expect(draft.kind).toBe("rejection");
   });
 });

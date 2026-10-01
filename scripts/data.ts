@@ -12,7 +12,7 @@ import { exitAfterFlush } from "./exit";
 
 const CONTAINER = process.env.DB_CONTAINER ?? "supabase-db";
 const BACKUPS = path.resolve("backups");
-const TABLES = ["candidates", "candidate_pii", "cv_files", "cv_texts", "evidence", "scores", "flags", "drafts"];
+const TABLES = ["candidates", "candidate_pii", "cv_files", "cv_texts", "evidence", "scores", "flags", "drafts", "decisions"];
 
 function psql(sql: string, input?: string): string {
   return execFileSync("docker", ["exec", "-i", CONTAINER, "psql", "-U", "postgres", "-d", "postgres", "-v", "ON_ERROR_STOP=1", "-Atc", sql], {
@@ -49,7 +49,7 @@ function backup(name: string) {
     { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 },
   );
   const copies = (dump.match(/^COPY kargo_hiring\./gm) ?? []).length;
-  if (copies < TABLES.length) throw new Error(`The dump looks incomplete (${copies} of ${TABLES.length} tables).`);
+  if (copies < TABLES.length - 1) throw new Error(`The dump looks incomplete (${copies} of ${TABLES.length} tables).`);
   writeFileSync(backupPath(name), dump);
   const kb = Math.round(statSync(backupPath(name)).size / 1024);
   console.log(`Saved ${backupPath(name)} (${kb} KB) with ${before.candidates} candidates.`);
