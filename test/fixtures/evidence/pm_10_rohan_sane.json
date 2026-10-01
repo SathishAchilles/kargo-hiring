@@ -1,0 +1,131 @@
+{
+ "file": "pm_10_rohan_sane.pdf",
+ "dropped": 0,
+ "redacted": "[CANDIDATE] [CANDIDATE]\nProduct Manager\n[PHONE] · [EMAIL] · Bengaluru · [LINK]\nProfessional Summary\nProduct Manager with 3 years in B2B SaaS and marketplace products. Strong in discovery, analytics, and\ncross-functional execution. Worked on products for enterprise operations teams — understand how complex\nworkflows translate into software requirements. Good at shipping and measuring. Have not worked in logistics\ndirectly but have built for operational users.\nWork Experience\nProduct Manager\nShadowfax Technologies (Logistics & Delivery SaaS, 500+ employees), Bengaluru · Jan 2023 – Present\n— PM for the client-facing order management and tracking module — 300+ brand and enterprise clients use the\nplatform\n— Redesigned the exception management dashboard based on 20+ discovery interviews with brand operations\nmanagers; reduced operations team's daily manual intervention by 28%\n— Shipped a bulk order upload and validation feature that reduced client onboarding time from 3 weeks to 4 days\n— Works within a 4-person PM team; owns this module with a PM Lead above; operates independently on day-to-day\ndecisions\n— Runs regular sessions with the client success team to surface operational complaints before they become\nescalations\nAssociate Product Manager\nShadowfax Technologies, Bengaluru · May 2021 – Dec 2022\n— Supported PM on the delivery partner app — owned 4 features from PRD to release across 18 months\n— Led a UX research initiative with 30 delivery partners across Mumbai and Bengaluru — findings drove a navigation\nredesign that reduced task completion time by 22%\n— Built the team's A/B testing framework from scratch; ran 6 experiments in the first 8 months, 3 of which changed\nrelease decisions\nEducation\nB.Tech, Computer Science · [INSTITUTION], Pune · 2017–2021 · CGPA 8.2/10\nSkills & Certifications\nProduct management · Delivery & logistics platforms · A/B testing · JIRA · Figma · SQL · Amplitude · Metabase · Notion\nProduct Analytics – Amplitude Certification (2022)",
+ "record": {
+  "roles": [
+   {
+    "title": "Associate Product Manager",
+    "company": "Shadowfax Technologies",
+    "start": "2021-05",
+    "end": "2022-12",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "freight",
+    "companySizeBand": "100_plus",
+    "soleOrFirstPm": false,
+    "pmAbove": true,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": true,
+    "committeeDecisions": false,
+    "quote": "Supported PM on the delivery partner app — owned 4 features from PRD to release across 18 months",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Product Manager",
+    "company": "Shadowfax Technologies",
+    "start": "2023-01",
+    "end": "present",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "freight",
+    "companySizeBand": "100_plus",
+    "soleOrFirstPm": false,
+    "pmAbove": true,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Works within a 4-person PM team; owns this module with a PM Lead above; operates independently on day-to-day",
+    "companyHeadcount": null,
+    "companyStage": null
+   }
+  ],
+  "education": [
+   {
+    "degree": "B.Tech, Computer Science",
+    "startYear": 2017,
+    "endYear": 2021,
+    "mode": "full_time",
+    "quote": "B.Tech, Computer Science · [INSTITUTION], Pune · 2017–2021"
+   }
+  ],
+  "shipped": [
+   {
+    "what": "Navigation redesign of the delivery partner app",
+    "outcome": "reduced task completion time by 22%",
+    "iterated": false,
+    "roleIndex": 0,
+    "quote": "findings drove a navigation"
+   },
+   {
+    "what": "Redesigned exception management dashboard",
+    "outcome": "reduced operations team's daily manual intervention by 28%",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Redesigned the exception management dashboard based on 20+ discovery interviews with brand operations"
+   },
+   {
+    "what": "Bulk order upload and validation feature",
+    "outcome": "reduced client onboarding time from 3 weeks to 4 days",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Shipped a bulk order upload and validation feature that reduced client onboarding time from 3 weeks to 4 days"
+   }
+  ],
+  "killed": [],
+  "discovery": [
+   {
+    "cadence": "occasional",
+    "onsite": false,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "Led a UX research initiative with 30 delivery partners across Mumbai and Bengaluru"
+   },
+   {
+    "cadence": "occasional",
+    "onsite": false,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "based on 20+ discovery interviews with brand operations"
+   },
+   {
+    "cadence": "recurring",
+    "onsite": false,
+    "withOpsUsers": false,
+    "viaOtherTeamsOnly": true,
+    "quote": "Runs regular sessions with the client success team to surface operational complaints before they become"
+   }
+  ],
+  "integrations": [],
+  "platforms": [
+   {
+    "what": "Client-facing order management and tracking module",
+    "quote": "PM for the client-facing order management and tracking module — 300+ brand and enterprise clients use the"
+   }
+  ],
+  "decisions": [],
+  "statedFigures": [
+   {
+    "about": "product_experience",
+    "roleIndex": null,
+    "years": 3,
+    "quote": "Product Manager with 3 years in B2B SaaS and marketplace products."
+   },
+   {
+    "about": "role",
+    "roleIndex": 0,
+    "years": 1.5,
+    "quote": "owned 4 features from PRD to release across 18 months"
+   }
+  ],
+  "location": {
+   "text": "Bengaluru",
+   "quote": "[PHONE] · [EMAIL] · Bengaluru · [LINK]"
+  }
+ }
+}

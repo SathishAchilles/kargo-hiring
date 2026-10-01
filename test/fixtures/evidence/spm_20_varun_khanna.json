@@ -1,0 +1,170 @@
+{
+ "file": "spm_20_varun_khanna.pdf",
+ "dropped": 0,
+ "redacted": "[CANDIDATE] [CANDIDATE] [EMAIL]\n[PHONE] · Mumbai\n[LINK]\nProfessional Summary\nSenior Product Manager with 9 years of experience — started in logistics management consulting (field-based, not\nstrategy-desk), moved into product at a freight-tech company, and built the company's TMS product from the\nground up. Deep understanding of how road freight, FTL/LTL, and carrier operations work in the Indian market —\nbuilt from 3 years of plant visits and ops audits.\nWork Experience\nVP Product (Senior PM-equivalent)\nBlume Logistics Technologies Pvt. Ltd. (TMS & Freight-Tech, 80 employees), Mumbai · Aug 2019 – Present\n— Built the product function from scratch — first product hire; grew to lead a team of 3 PMs\n— Designed and shipped the company's TMS product from concept to 30 paying clients over 3 years — no roadmap\nexisted before I joined\n— Road freight dispatch, carrier rate management, trip sheet automation, and freight audit are the 4 modules I have\nowned end to end from inception\n— Runs quarterly embedded visits at 2 transporter yards and 2 shipper dispatch points: 2 days minimum, observing\nhow freight is planned, loaded, and tracked without technology intervention\n— Killed a mobile app for drivers in 4 weeks post-launch: adoption was 3% of the target, the real problem was\ndispatcher-side, not driver-side\n— Manages a 3-PM team; introduced the team's first structured discovery practice and feature measurement\nframework\nSenior Consultant – Logistics & Supply Chain\nPraxis Global Alliance (Management Consulting), Mumbai · Mar 2016 – Jul 2019\n— Led supply chain and logistics optimisation engagements for mid-large industrial, FMCG, and e-commerce clients\n— Spent an average of 2 days per week at client plant, warehouse, or distribution centre sites — not just data analysis\nfrom the office\n— Led a road freight network redesign for a major cement company: spent 6 weeks visiting 8 plant dispatch points,\nriding along on deliveries, and interviewing transporters at truck terminals before drawing a single recommendation\n— Delivered INR 40Cr in freight cost savings across 4 major engagements over 3 years\nAnalyst\nPraxis Global Alliance, Mumbai · Jul 2014 – Feb 2016\n— Supported senior consultants on supply chain and operations projects in FMCG and retail sectors\n— Built data models, process maps, and client presentation decks; led client site visits in the junior analyst role\nEducation\nMBA, Operations & Supply Chain · [INSTITUTION] · 2012–2014\nB.Tech, Civil Engineering · [INSTITUTION] · 2008–2012 · CGPA 7.8/10\nSkills & Certifications\nProduct strategy · TMS & freight-tech · Road freight operations · Supply chain consulting · JIRA · Figma · SQL · Miro ·\nExcel (advanced)\nCSCP – APICS (2015) · SAFe 5 Product Owner/PM (2020)",
+ "record": {
+  "roles": [
+   {
+    "title": "Analyst",
+    "company": "Praxis Global Alliance",
+    "start": "2014-07",
+    "end": "2016-02",
+    "internship": false,
+    "roleType": "consulting",
+    "opsDomain": "desk",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": false,
+    "onsiteOpsImmersion": true,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Built data models, process maps, and client presentation decks; led client site visits in the junior analyst role",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Senior Consultant – Logistics & Supply Chain",
+    "company": "Praxis Global Alliance",
+    "start": "2016-03",
+    "end": "2019-07",
+    "internship": false,
+    "roleType": "consulting",
+    "opsDomain": "freight",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": false,
+    "onsiteOpsImmersion": true,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Spent an average of 2 days per week at client plant, warehouse, or distribution centre sites — not just data analysis",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "VP Product (Senior PM-equivalent)",
+    "company": "Blume Logistics Technologies Pvt. Ltd.",
+    "start": "2019-08",
+    "end": "present",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "freight",
+    "companySizeBand": "under_100",
+    "soleOrFirstPm": true,
+    "pmAbove": null,
+    "pmsManaged": 3,
+    "productOwnership": true,
+    "onsiteOpsImmersion": true,
+    "builtProductPractice": true,
+    "committeeDecisions": false,
+    "quote": "Built the product function from scratch — first product hire; grew to lead a team of 3 PMs",
+    "companyHeadcount": null,
+    "companyStage": null
+   }
+  ],
+  "education": [
+   {
+    "degree": "MBA, Operations & Supply Chain",
+    "startYear": 2012,
+    "endYear": 2014,
+    "mode": "full_time",
+    "quote": "MBA, Operations & Supply Chain · [INSTITUTION] · 2012–2014"
+   },
+   {
+    "degree": "B.Tech, Civil Engineering",
+    "startYear": 2008,
+    "endYear": 2012,
+    "mode": "full_time",
+    "quote": "B.Tech, Civil Engineering · [INSTITUTION] · 2008–2012"
+   }
+  ],
+  "shipped": [
+   {
+    "what": "TMS product",
+    "outcome": "30 paying clients over 3 years",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Designed and shipped the company's TMS product from concept to 30 paying clients over 3 years"
+   },
+   {
+    "what": "Mobile app for drivers",
+    "outcome": "adoption was 3% of the target",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Killed a mobile app for drivers in 4 weeks post-launch: adoption was 3% of the target"
+   }
+  ],
+  "killed": [
+   {
+    "what": "Mobile app for drivers",
+    "reason": "adoption was 3% of the target, the real problem was dispatcher-side, not driver-side",
+    "sunkCost": false,
+    "quote": "Killed a mobile app for drivers in 4 weeks post-launch: adoption was 3% of the target, the real problem was"
+   }
+  ],
+  "discovery": [
+   {
+    "cadence": "recurring",
+    "onsite": true,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "Runs quarterly embedded visits at 2 transporter yards and 2 shipper dispatch points: 2 days minimum"
+   },
+   {
+    "cadence": "occasional",
+    "onsite": true,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "riding along on deliveries, and interviewing transporters at truck terminals before drawing a single recommendation"
+   },
+   {
+    "cadence": "recurring",
+    "onsite": true,
+    "withOpsUsers": true,
+    "viaOtherTeamsOnly": false,
+    "quote": "Spent an average of 2 days per week at client plant, warehouse, or distribution centre sites"
+   }
+  ],
+  "integrations": [],
+  "platforms": [
+   {
+    "what": "TMS (road freight dispatch, carrier rate management, trip sheet automation, freight audit modules)",
+    "quote": "Road freight dispatch, carrier rate management, trip sheet automation, and freight audit are the 4 modules I have"
+   }
+  ],
+  "decisions": [
+   {
+    "what": "Killed the driver mobile app 4 weeks post-launch after finding the real problem was dispatcher-side",
+    "irreversible": true,
+    "quote": "Killed a mobile app for drivers in 4 weeks post-launch"
+   }
+  ],
+  "statedFigures": [
+   {
+    "about": "total_experience",
+    "roleIndex": null,
+    "years": 9,
+    "quote": "Senior Product Manager with 9 years of experience"
+   },
+   {
+    "about": "role",
+    "roleIndex": 1,
+    "years": 3,
+    "quote": "Delivered INR 40Cr in freight cost savings across 4 major engagements over 3 years"
+   },
+   {
+    "about": "role",
+    "roleIndex": 2,
+    "years": 3,
+    "quote": "Designed and shipped the company's TMS product from concept to 30 paying clients over 3 years"
+   }
+  ],
+  "location": {
+   "text": "Mumbai",
+   "quote": "[PHONE] · Mumbai"
+  }
+ }
+}

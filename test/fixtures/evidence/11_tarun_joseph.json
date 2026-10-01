@@ -1,0 +1,359 @@
+{
+ "file": "11_tarun_joseph.pdf",
+ "dropped": 0,
+ "redacted": "• • [LINK]/\nPROFESSIONAL SUMMARY\nAI-Driven Product Leader & Former Founder with 8+ years of experience scaling zero-to-one FinTech, Enterprise SaaS,\nand Agri-tech ecosystems. Rooted in strong systems-level thinking from a mechanical engineering foundation, I\nspecialize in architecting complex credit marketplaces and robust data pipelines (RAG architectures, predictive ML,\ncomputer vision) that bridge the gap between Fortune 500 enterprises and “credit-invisible” MSMEs. Adept at driving\nlocalized, inclusive innovation , deploying vernacular NLP agents across Northern and North-Eastern tier-3 markets to\nbreak digital literacy barriers and slash CAC. A strategic operator with a proven track record of solving high-stakes data\nbottlenecks, monetizing advanced analytics, and facilitating multimillion-dollar capital flows with zero-friction onboarding.\nSAMPLE ASSIGNMENTS / PROJECTS\nUnified Lead Queue: [LINK]\nLoan Management System Prototype: [LINK]\nSKILLS\nProduct Strategy & Business: 0-to-1 Product Development, Go-to-Market (GTM) Strategy, B2B2C Marketplaces,\nSaaS Monetization, Agile/Scrum Leadership, A/B Testing, Enterprise Contract Renewals, B2B Supply Chain Telemetry.\nAI & Machine Learning: RAG Architectures, Small Language Models (SLMs), Predictive ML (XGBoost, Random\nForest), Natural Language Processing (NLP), Computer Vision / Advanced OCR (Tesseract), Spatial Parsing,\nBehavioral ML Credit Scoring.\nTechnical Architecture & Infrastructure: Multi-Tenant System Architecture, ETL Data Pipelines, RESTful APIs &\nSFTP, AWS (Lambda, EC2, S3), Python (Django), Node.js, React Native, PostgreSQL, Redis, Enterprise ERP\nIntegrations (SAP, Workday).\nFinTech & Domain Expertise: Supply Chain Finance (SCF), Agri-Fintech, Tax Reconciliation (GSTR 2A/2B),\nAlternative Credit Underwriting, MSME Digital Lending, Identity Fraud Prevention, ITSM & Shift-Left IT Automation.\nLocalization, UX & User Journeys: Multilingual Product Scaling (English, Hindi, Nepali), Conversational AI Agents,\nZero-Friction Video-KYC Funnels, Digital Adoption Platforms (DAP), Robotic Process Automation (RPA), Omnichannel\nChatbots.\nPROFESSIONAL EXPERIENCE\nDirector of AI Products | FAI | Jan 2025 – Nov 2025\nHelping Fortune 500 clients like McKinsey, AMEX, and Tata reclaim millions in global and domestic tax through intelligent automation.\n• Built a Scalable Tax Reconciliation Engine: Directed the development of a multi-tenant B2B/B2C platform with\nrobust ETL pipelines (RESTful APIs, SFTP, EML parsing) to synchronize GST portal data and SAP ERP ledgers ,\nprocessing ~$0.5B in GSTR 2A/2B datasets for 1,200+ enterprise clients at 100% compliance. Directly enabled\nINR 18Cr+ in annual SaaS ARR from enterprise tier subscription upgrades and expanded seat licenses.\n• Engineered an Anti-Hallucination Document Extraction Pipeline: Designed an advanced RAG + SLM\narchitecture to accurately parse complex multi-region hotel invoices, surging extraction accuracy from 70% to 98%\nand cutting token compute costs by 40%. Saved ~INR 2.4Cr/year in compute and manual review costs,\ndirectly protecting gross margin on the AI product tier.\n• Deployed Event-Driven CRM Automation: Built NLP-triggered autonomous vendor/client follow-up workflows,\nreducing end-to-end pipeline TAT by 7 days. Accelerated revenue recognition by ~INR 4Cr/quarter by\nunblocking delayed GST data collection that was stalling client billing cycles.\n• Launched an Interactive BI Analytics Dashboard: Structured flattened relational data into dynamic GST/VAT\nvisualization modules with automated reporting for Fortune 500 stakeholders. Drove a 15% increase in product\nrevenue (~INR 6Cr incremental ARR) by proving ROI and accelerating upsell conversations with CFO-level\nbuyers.\nExternal Product Consultant | Supermoney | Mar 2024 – Jan 2025\n• Built a Full-Spectrum AI Credit Marketplace: Architected a dual-engine lending platform merging embedded\nsupply chain telemetry with alternative startup cash-flow data. Connected 20,000+ credit-invisible MSMEs and\nfast-growing startups to 30+ lenders, facilitating INR 300Cr+ in working capital disbursals. Generated ~INR 3Cr in\nplatform origination fee revenue (1% average take-rate on facilitated loan volume) within the first 9 months.\n• Solved Unstructured Financial Docs with GenAI: Transformed a highly manual underwriting process into a\n10-minute AI decision engine using RAG + distilled SLMs, surging credit decisioning speed by 85% and enabling\nsame-day disbursals. Reduced per-loan processing cost by ~60%, unlocking ~INR 1.2Cr in annual\noperational savings and enabling the team to scale from 200 to 800+ monthly disbursals.\n• Built a Predictive Risk Brain for Dynamic Underwriting: Engineered ML models analyzing real-time alternative\ndata (seasonal FMCG transactions, supply chain signals) to dynamically throttle credit limits (INR 5L–INR 2Cr),\nmaintaining a sub-1% default rate. Protected ~INR 3Cr in at-risk NPA exposure that would have otherwise\nresulted in write-offs on the volatile MSME loan book.\n[CANDIDATE] [CANDIDATE][CANDIDATE] [CANDIDATE] [EMAIL][PHONE][PHONE] [CANDIDATE]-[CANDIDATE]-pm [CANDIDATE]-[CANDIDATE]-pm\nVP Product and Growth | Jai Kisan (Bharat Khata) | Dec 2022 – Feb 2024\n• Built a Rural-First Credit Infrastructure: Led the 0-to-1 launch of an agri-specific Loan Origination System (LOS)\ntailored for the Bharat market, digitizing and disbursing INR 500Cr+ in annualized agricultural credit. Contributed\ndirectly to ~INR 12–15Cr in annual interest and processing fee revenue by enabling the company to scale\nfrom pilot to full-state rollout across 3 agri-corridors.\n• Engineered a Localized Document Intelligence Pipeline: Deployed spatial parsing and SLMs tuned for regional\nanomalies to autonomously validate non-standard handwritten mandi receipts and vernacular trade ledgers,\ncollapsing loan approval TAT from 2 weeks to under 3 hours. Reduced field verification costs by INR 80L/year\nwhile enabling 4x throughput on the same operational headcount.\n• Formulated a Yield-Backed Underwriting Model: Built an ML scoring algorithm integrating crop seasonality,\nregional monsoon telemetry, and real-time commodity pricing to dynamically scale dealer working capital limits,\nholding portfolio delinquency below 1.2%. Prevented an estimated INR 6Cr in NPA losses over the operating\nperiod by replacing collateral-based approvals with data-driven risk controls.\n• Overcame Digital Literacy Barriers via Voice AI: Launched a multilingual conversational AI assistant (English,\nHindi, Nepali) for self-serve KYC and origination across tier-3/4 markets, slashing CAC by 35% and reducing\nfield-agent dependency. Saved ~INR 1.5Cr annually in field-agent and acquisition costs, directly improving\nunit economics per loan.\n• Orchestrated End-to-End SCF Digitization: Deployed a fully closed-loop Supply Chain Finance engine integrated\nwith anchor corporate ERPs for instant EIPP and automated reconciliation, processing INR 1,000Cr+ in\nannualized invoice volume. Unlocked ~INR 8Cr in annual SCF fee revenue (0.8% platform fee on facilitated\ninvoice financing) from anchor-side monetization.\nVP Product and Marketing | Payme | Feb 2022 – Dec 2022\n• Spearheaded a High-Velocity Consumer Credit Funnel: Integrated multi-nodal API gateways (CIBIL, NSDL,\nAccount Aggregators) for sub-2-minute algorithmic approvals, processing 50,000+ monthly micro-loan\napplications. Supported ~INR 10Cr in monthly disbursals, generating ~INR 1.2Cr/month in processing and\ninterest fee revenue at the platform's peak run-rate.\n• Defeated Fraud with Computer Vision: Architected a deep learning OCR pipeline to parse, flatten, and\ncross-verify PAN cards and bank statements, plummeting identity fraud by 40% and pushing extraction accuracy\nto 95%. Prevented ~INR 2.5Cr in estimated annual fraud-related write-offs while reducing manual KYC ops\ncosts by INR 40L/year.\n• Architected an Alternative ML Credit Engine: Deployed predictive ML models analyzing transactional SMS\npatterns, utility payments, and device telemetry to safely approve 30% more credit-invisible applicants while\nholding NPAs below 2.5%. Grew the addressable borrower base by 30%, generating ~INR 3Cr in incremental\nannual revenue from applicants who would have been declined under traditional bureau scoring.\n• Optimized Mobile Conversions & Digital Collections with NLP: Deployed an omnichannel NLP chatbot for\nfrictionless Video-KYC completion and automated WhatsApp collection nudges, boosting funnel conversion by\n22% and reducing 30-day delinquency by 15%. Translated to ~INR 1.8Cr in recovered collections on an\nannualized basis and a measurable reduction in the cost-to-collect per delinquent account.\nProduct Head (Co-Founder) | Bonoape | Jan 2019 – Feb 2022\n• Architected Retail Middleware: Founded and scaled a B2B2C FMCG platform; deployed a free mobile-first smart\nbilling app (React Native) that invisibly digitized inventory for 400+ daily active Kirana stores, with a 400% usage\nspike during early-pandemic supply chain disruptions.\n• Engineered a High-Speed OCR Pipeline: Deployed an asynchronous computer vision engine (Tesseract, AWS\nLambda) custom-trained on degraded thermal paper to parse 30-item distributor invoices in under 15 seconds.\nEliminated ~INR XXL/year in manual data-entry costs for distributor clients and became a key stickiness driver\nfor paid tier retention.\n• Planned a Multi-Tiered Monetization Engine: Built a scalable B2B2C revenue model featuring premium retailer\nSaaS, an algorithmic FMCG ad-bidding network, and a high-concurrency inventory API (Node.js/Redis) for\nhyperlocal fleet dispatch.\n• Delivered Real-Time Analytics: Launched an enterprise dashboard granting FMCG giants (Unilever, MTR)\nvisibility into 500+ micro-markets. Scaled to Pre-Series A term-sheet discussions before executing a structured,\nethical shutdown , migrating users and returning angel capital following the pandemic-related loss of a key\nco-founder.\nProduct Owner (AI Implementation) | Anakage (Accenture APAC) | Feb 2017 – Oct 2018\n• Built a 'Shift-Left' IT Automation Engine: Spearheaded an intelligent endpoint management platform integrating\nwith ServiceNow and Jira to autonomously deflect 40% of routine IT requests for Fortune 500 clients. Contributed\nto ~$2M+ in annual client helpdesk cost savings per enterprise account, directly supporting renewal and\nupsell cycles and a 25% increase in contract renewal rates. Launched an Enterprise Software Telemetry\nDashboard:Directly drove a 25% increase in enterprise contract renewals by proving productivity gains,\ncontributing to a multi-million dollar expansion in Accenture APAC's managed services book.\n• Deployed a 'Self-Healing' RPA Infrastructure: Built a background telemetry and RPA pipeline that autonomously\nresolved endpoint compliance gaps, VPN drops, and cache bloat, slashing MTTR from 4 hours to a 1-click\n10-second fix. Reduced L1/L2 support ticket volume by 40%, saving clients ~$800K/year per 10,000-seat\nenterprise deployment, a key metric cited in Fortune 500 case studies.",
+ "record": {
+  "roles": [
+   {
+    "title": "Product Owner (AI Implementation)",
+    "company": "Anakage (Accenture APAC)",
+    "start": "2017-02",
+    "end": "2018-10",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "none",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Product Owner (AI Implementation) | Anakage (Accenture APAC) | Feb 2017 – Oct 2018",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Product Head (Co-Founder)",
+    "company": "Bonoape",
+    "start": "2019-01",
+    "end": "2022-02",
+    "internship": false,
+    "roleType": "founder",
+    "opsDomain": "none",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Product Head (Co-Founder) | Bonoape | Jan 2019 – Feb 2022",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "VP Product and Marketing",
+    "company": "Payme",
+    "start": "2022-02",
+    "end": "2022-12",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "none",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "VP Product and Marketing | Payme | Feb 2022 – Dec 2022",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "VP Product and Growth",
+    "company": "Jai Kisan (Bharat Khata)",
+    "start": "2022-12",
+    "end": "2024-02",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "none",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "VP Product and Growth | Jai Kisan (Bharat Khata) | Dec 2022 – Feb 2024",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "External Product Consultant",
+    "company": "Supermoney",
+    "start": "2024-03",
+    "end": "2025-01",
+    "internship": false,
+    "roleType": "consulting",
+    "opsDomain": "desk",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": false,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "External Product Consultant | Supermoney | Mar 2024 – Jan 2025",
+    "companyHeadcount": null,
+    "companyStage": null
+   },
+   {
+    "title": "Director of AI Products",
+    "company": "FAI",
+    "start": "2025-01",
+    "end": "2025-11",
+    "internship": false,
+    "roleType": "product",
+    "opsDomain": "none",
+    "companySizeBand": "unknown",
+    "soleOrFirstPm": false,
+    "pmAbove": null,
+    "pmsManaged": 0,
+    "productOwnership": true,
+    "onsiteOpsImmersion": false,
+    "builtProductPractice": false,
+    "committeeDecisions": false,
+    "quote": "Director of AI Products | FAI | Jan 2025 – Nov 2025",
+    "companyHeadcount": null,
+    "companyStage": null
+   }
+  ],
+  "education": [],
+  "shipped": [
+   {
+    "what": "'Shift-Left' IT Automation Engine",
+    "outcome": "Deflected 40% of routine IT requests; ~$2M+ annual helpdesk cost savings per enterprise account",
+    "iterated": false,
+    "roleIndex": 0,
+    "quote": "Built a 'Shift-Left' IT Automation Engine"
+   },
+   {
+    "what": "Enterprise Software Telemetry Dashboard",
+    "outcome": "25% increase in enterprise contract renewals",
+    "iterated": false,
+    "roleIndex": 0,
+    "quote": "Launched an Enterprise Software Telemetry"
+   },
+   {
+    "what": "'Self-Healing' RPA Infrastructure",
+    "outcome": "MTTR cut from 4 hours to 10 seconds; L1/L2 ticket volume reduced 40%",
+    "iterated": false,
+    "roleIndex": 0,
+    "quote": "Deployed a 'Self-Healing' RPA Infrastructure"
+   },
+   {
+    "what": "Mobile-first smart billing app for Kirana stores",
+    "outcome": "400+ daily active Kirana stores; 400% usage spike during early pandemic",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Founded and scaled a B2B2C FMCG platform; deployed a free mobile-first smart"
+   },
+   {
+    "what": "High-speed OCR pipeline for distributor invoices",
+    "outcome": "Parses 30-item distributor invoices in under 15 seconds",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Engineered a High-Speed OCR Pipeline"
+   },
+   {
+    "what": "Enterprise real-time analytics dashboard for FMCG brands",
+    "outcome": "Visibility into 500+ micro-markets",
+    "iterated": false,
+    "roleIndex": 1,
+    "quote": "Launched an enterprise dashboard granting FMCG giants (Unilever, MTR)"
+   },
+   {
+    "what": "High-velocity consumer credit funnel",
+    "outcome": "50,000+ monthly micro-loan applications; ~INR 10Cr monthly disbursals",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Spearheaded a High-Velocity Consumer Credit Funnel"
+   },
+   {
+    "what": "Deep learning OCR pipeline for KYC fraud prevention",
+    "outcome": "Identity fraud reduced 40%; extraction accuracy 95%",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Architected a deep learning OCR pipeline to parse, flatten, and"
+   },
+   {
+    "what": "Alternative ML credit engine",
+    "outcome": "30% more credit-invisible applicants approved; NPAs below 2.5%",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Architected an Alternative ML Credit Engine"
+   },
+   {
+    "what": "Omnichannel NLP chatbot for Video-KYC and collections",
+    "outcome": "Funnel conversion +22%; 30-day delinquency -15%",
+    "iterated": false,
+    "roleIndex": 2,
+    "quote": "Deployed an omnichannel NLP chatbot for"
+   },
+   {
+    "what": "Agri-specific Loan Origination System",
+    "outcome": "INR 500Cr+ annualized agricultural credit disbursed",
+    "iterated": false,
+    "roleIndex": 3,
+    "quote": "Led the 0-to-1 launch of an agri-specific Loan Origination System (LOS)"
+   },
+   {
+    "what": "Localized document intelligence pipeline",
+    "outcome": "Loan approval TAT from 2 weeks to under 3 hours",
+    "iterated": false,
+    "roleIndex": 3,
+    "quote": "Engineered a Localized Document Intelligence Pipeline"
+   },
+   {
+    "what": "Yield-backed underwriting model",
+    "outcome": "Portfolio delinquency below 1.2%",
+    "iterated": false,
+    "roleIndex": 3,
+    "quote": "Formulated a Yield-Backed Underwriting Model"
+   },
+   {
+    "what": "Multilingual conversational AI assistant for KYC and origination",
+    "outcome": "CAC reduced 35%",
+    "iterated": false,
+    "roleIndex": 3,
+    "quote": "Launched a multilingual conversational AI assistant (English,"
+   },
+   {
+    "what": "Supply Chain Finance engine",
+    "outcome": "INR 1,000Cr+ annualized invoice volume",
+    "iterated": false,
+    "roleIndex": 3,
+    "quote": "Orchestrated End-to-End SCF Digitization"
+   },
+   {
+    "what": "AI credit marketplace",
+    "outcome": "20,000+ MSMEs connected to 30+ lenders; INR 300Cr+ disbursals",
+    "iterated": false,
+    "roleIndex": 4,
+    "quote": "Built a Full-Spectrum AI Credit Marketplace: Architected a dual-engine lending platform merging embedded"
+   },
+   {
+    "what": "AI underwriting decision engine",
+    "outcome": "Credit decisioning speed +85%",
+    "iterated": false,
+    "roleIndex": 4,
+    "quote": "Transformed a highly manual underwriting process into a"
+   },
+   {
+    "what": "Predictive risk model for dynamic underwriting",
+    "outcome": "Sub-1% default rate",
+    "iterated": false,
+    "roleIndex": 4,
+    "quote": "Built a Predictive Risk Brain for Dynamic Underwriting"
+   },
+   {
+    "what": "Multi-tenant tax reconciliation engine",
+    "outcome": "1,200+ enterprise clients; INR 18Cr+ annual SaaS ARR",
+    "iterated": false,
+    "roleIndex": 5,
+    "quote": "Built a Scalable Tax Reconciliation Engine: Directed the development of a multi-tenant B2B/B2C platform with"
+   },
+   {
+    "what": "Anti-hallucination document extraction pipeline",
+    "outcome": "Extraction accuracy 70% to 98%; token compute costs -40%",
+    "iterated": false,
+    "roleIndex": 5,
+    "quote": "Engineered an Anti-Hallucination Document Extraction Pipeline: Designed an advanced RAG + SLM"
+   },
+   {
+    "what": "Event-driven CRM automation",
+    "outcome": "Pipeline TAT reduced by 7 days",
+    "iterated": false,
+    "roleIndex": 5,
+    "quote": "Deployed Event-Driven CRM Automation: Built NLP-triggered autonomous vendor/client follow-up workflows,"
+   },
+   {
+    "what": "Interactive BI analytics dashboard",
+    "outcome": "15% increase in product revenue (~INR 6Cr incremental ARR)",
+    "iterated": false,
+    "roleIndex": 5,
+    "quote": "Launched an Interactive BI Analytics Dashboard: Structured flattened relational data into dynamic GST/VAT"
+   }
+  ],
+  "killed": [
+   {
+    "what": "Bonoape venture",
+    "reason": "pandemic-related loss of a key co-founder",
+    "sunkCost": false,
+    "quote": "ethical shutdown , migrating users and returning angel capital following the pandemic-related loss of a key"
+   }
+  ],
+  "discovery": [],
+  "integrations": [
+   {
+    "system": "SAP ERP",
+    "category": "erp",
+    "involvement": "owned",
+    "commercialOutcome": "INR 18Cr+ annual SaaS ARR",
+    "quote": "to synchronize GST portal data and SAP ERP ledgers"
+   },
+   {
+    "system": "GST portal",
+    "category": "other",
+    "involvement": "owned",
+    "commercialOutcome": "INR 18Cr+ annual SaaS ARR",
+    "quote": "to synchronize GST portal data and SAP ERP ledgers"
+   },
+   {
+    "system": "ETL pipelines (RESTful APIs, SFTP, EML parsing)",
+    "category": "data_platform",
+    "involvement": "owned",
+    "commercialOutcome": null,
+    "quote": "robust ETL pipelines (RESTful APIs, SFTP, EML parsing)"
+   },
+   {
+    "system": "Anchor corporate ERPs",
+    "category": "erp",
+    "involvement": "owned",
+    "commercialOutcome": "~INR 8Cr annual SCF fee revenue",
+    "quote": "integrated with anchor corporate ERPs for instant EIPP"
+   },
+   {
+    "system": "CIBIL, NSDL, Account Aggregators",
+    "category": "payment",
+    "involvement": "owned",
+    "commercialOutcome": "~INR 1.2Cr/month processing and interest fee revenue",
+    "quote": "Integrated multi-nodal API gateways (CIBIL, NSDL,"
+   },
+   {
+    "system": "ServiceNow and Jira",
+    "category": "other",
+    "involvement": "owned",
+    "commercialOutcome": "~$2M+ annual client helpdesk cost savings per enterprise account",
+    "quote": "with ServiceNow and Jira to autonomously deflect 40% of routine IT requests for Fortune 500 clients."
+   }
+  ],
+  "platforms": [],
+  "decisions": [
+   {
+    "what": "Executed structured shutdown of Bonoape, migrating users and returning angel capital",
+    "irreversible": true,
+    "quote": "ethical shutdown , migrating users and returning angel capital following the pandemic-related loss of a key"
+   }
+  ],
+  "statedFigures": [
+   {
+    "about": "total_experience",
+    "roleIndex": null,
+    "years": 8,
+    "quote": "8+ years of experience"
+   }
+  ],
+  "location": {
+   "text": null,
+   "quote": null
+  }
+ }
+}
