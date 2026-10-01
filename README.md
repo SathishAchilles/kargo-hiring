@@ -16,6 +16,7 @@ upload CV + role ──▶ extract text ──▶ separate personal details, red
 ```
 
 - **The AI recommends; you decide.** The tiers are recommendations, never decisions. Nobody is shortlisted, held or declined until you record it (per candidate and role, with an optional private note), and the dashboard tracks how many you have decided. An email can only be sent once your decision matches it: an invite for Shortlisted, a rejection for Declined, nothing on hold. The server enforces this in `sendDraft`, not only the page.
+- **Decide from the list or the page.** Each row has Shortlist, On hold and Decline buttons (click the active one to clear; an Undo toast follows each click). Deciding never sends an email. Hovering a name, or hovering or tapping a total, previews the radar chart of the five sub-scores.
 - **Candidates open in the role they applied for**, and the email is written for that role by default; one link switches the page and email to the other role.
 
 - **AI reads, code scores.** One AI call turns the redacted CV into an evidence record in which every fact carries a verbatim quote; facts whose quote is not in the CV are dropped. The rubric scores are computed in code (`src/lib/scoring/rubric.ts`), so the same evidence always gives the same score and a changed as-of date rescores with no AI call.
