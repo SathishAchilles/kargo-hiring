@@ -60,6 +60,11 @@ test("a P3 = 2 candidate shows the 100+-people anchor and its quote", async ({ p
   const p3 = page.locator("ol > li").filter({ hasText: "P3 Operating without structure" });
   await expect(p3).toContainText("2/5");
   await expect(p3).toContainText("Product role at a company of 100+ people with a PM above");
+  // The quotes are collapsed until asked for.
+  const evidence = p3.locator("details");
+  await expect(evidence).not.toHaveAttribute("open", "");
+  await expect(p3.locator("ul li").first()).toBeHidden();
+  await evidence.locator("summary").click();
   await expect(p3.locator("ul li").first()).toBeVisible();
 });
 
@@ -120,8 +125,27 @@ test("tier badges are not white-on-amber", async ({ page }) => {
   expect(color).not.toBe("rgb(255, 255, 255)");
 });
 
+test("tier quick filters sit above the list and toggle on and off", async ({ page }) => {
+  await page.goto("/?role=pm", { waitUntil: "networkidle" });
+  const shortlist = page.getByRole("link", { name: /^Shortlist \d+$/ });
+  await shortlist.click();
+  await expect(page).toHaveURL(/tier=Shortlist/);
+  await expect(page.getByRole("link", { name: /^Shortlist \d+$/ })).toHaveAttribute("aria-current", "true");
+  await page.getByRole("link", { name: /^Shortlist \d+$/ }).click();
+  await expect(page).not.toHaveURL(/tier=/);
+});
+
 test.describe("phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the ranking comes before the cohort panel, inside the first screen", async ({ page }) => {
+    await page.goto("/?role=pm");
+    const first = page.locator("ul li a[href^='/candidates/']").first();
+    const cohort = page.getByRole("region", { name: "Cohort insights" });
+    const [list, panel] = await Promise.all([first.boundingBox(), cohort.boundingBox()]);
+    expect(list!.y).toBeLessThan(panel!.y);
+    expect(list!.y).toBeLessThan(844);
+  });
 
   test("no horizontal scroll, and a candidate shows sub-scores", async ({ page }) => {
     await page.goto("/?role=spm");
