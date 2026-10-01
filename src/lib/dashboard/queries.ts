@@ -7,6 +7,7 @@ import { rank } from "@/lib/scoring/rank";
 import { isMumbai } from "@/lib/scoring/score";
 import type { DraftStatus, FlagType, RoleKey, Tier } from "@/lib/types";
 import { chipsFor, type Chip } from "./chips";
+import { parseSort, sortRows, type SortDir, type SortKey } from "./sort";
 import { cohortFor, type Cohort } from "./cohort";
 
 export type DashboardRow = {
@@ -25,7 +26,15 @@ export type DashboardRow = {
   suggestOther: boolean;
 };
 
-export type Filters = { tier?: Tier; applied?: RoleKey; flag?: FlagType; suggest?: boolean; top?: boolean };
+export type Filters = {
+  tier?: Tier;
+  applied?: RoleKey;
+  flag?: FlagType;
+  suggest?: boolean;
+  top?: boolean;
+  sort?: SortKey;
+  dir?: SortDir;
+};
 
 export type PendingRow = { id: string; fileName: string; status: string; reason: string | null };
 
@@ -106,7 +115,8 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
     role,
   );
 
-  const rows = all.filter(
+  const sort = parseSort(filters.sort, filters.dir);
+  const filtered = all.filter(
     (row) =>
       (!filters.tier || row.tier === filters.tier) &&
       (!filters.applied || row.appliedRole === filters.applied) &&
@@ -114,6 +124,7 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
       (!filters.suggest || row.suggestOther) &&
       (!filters.top || row.total === cohort.topTotal),
   );
+  const rows = sortRows(filtered, sort.key, sort.dir);
 
   const pending = await db
     .select({ id: candidates.id, fileName: candidates.fileName, status: candidates.status, reason: candidates.statusReason })
