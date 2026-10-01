@@ -124,7 +124,7 @@ export function RankedTable({
                   {row.productYears.toFixed(1)} / {row.totalYears.toFixed(1)}
                 </span>
               </TableCell>
-              <TableCell className="max-w-sm px-2 py-3 whitespace-normal">
+              <TableCell className="min-w-64 max-w-lg px-2 py-3 whitespace-normal">
                 <ChipRow chips={row.chips} max={3} />
               </TableCell>
               <TableCell className="px-2 py-3 text-xs whitespace-nowrap">{EMAIL_LABEL[row.emailStatus]}</TableCell>
