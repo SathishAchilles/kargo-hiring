@@ -1,5 +1,8 @@
+import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CopyButton } from "@/components/copy-button";
+import { ScoreBar } from "@/components/score-bar";
 import { TierBadge } from "@/components/tier-badge";
 import { loadCandidate } from "@/lib/dashboard/queries";
 import { emailMode } from "@/lib/email/send";
@@ -48,13 +51,14 @@ export default async function CandidatePage({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 md:px-6">
-      <Link href={`/?role=${role}`} className="text-sm text-muted-foreground hover:underline">
+      <div className="sticky top-0 z-20 -mx-4 border-b bg-background px-4 pt-3 pb-3 md:-mx-6 md:px-6">
+      <Link href={`/?role=${role}`} className="inline-block min-h-6 text-sm text-muted-foreground hover:underline">
         ← {ROLE_LABEL[role]} ranking
       </Link>
 
-      <header className="mt-3 flex flex-wrap items-start justify-between gap-4">
+      <header className="mt-2 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight break-words">{pii?.name ?? candidate.fileName}</h1>
+          <h1 className="text-xl font-semibold tracking-tight break-words md:text-2xl">{pii?.name ?? candidate.fileName}</h1>
           <p className="mt-1 text-sm break-all text-muted-foreground">
             {pii?.emails[0] ?? "no email found"} · {pii?.phones[0] ? `+91 ${pii.phones[0]}` : "no phone found"} ·{" "}
             <a className="hover:underline" href={`/api/candidates/${id}/file`} target="_blank" rel="noreferrer">
@@ -78,6 +82,7 @@ export default async function CandidatePage({
           )}
         </div>
       </header>
+      </div>
 
       {candidate.status !== "ready" && (
         <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-800 dark:bg-amber-950">
@@ -87,6 +92,40 @@ export default async function CandidatePage({
           </span>
           {candidate.status === "failed" && <RetryButton id={id} />}
         </div>
+      )}
+
+      {flags.length > 0 ? (
+        <section
+          aria-label="Integrity flags"
+          className="mt-4 rounded-lg border border-rose-300 bg-rose-50 p-4 text-sm dark:border-rose-800 dark:bg-rose-950"
+        >
+          <h2 className="flex flex-wrap items-center gap-2 font-medium text-rose-900 dark:text-rose-200">
+            <TriangleAlert className="size-4 shrink-0" aria-hidden />
+            {flags.length} integrity {flags.length === 1 ? "flag" : "flags"} to check
+            <span className="font-normal text-foreground/80">· flags never change scores</span>
+          </h2>
+          <ul className="mt-3 space-y-3">
+            {flags.map((flag) => (
+              <li key={flag.id} className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium">{FLAG_TITLE[flag.type]}</p>
+                  {flag.relatedName && flag.relatedCandidateId && (
+                    <p className="mt-0.5">
+                      Same CV as{" "}
+                      <Link className="underline" href={`/candidates/${flag.relatedCandidateId}?role=${role}`}>
+                        {flag.relatedName}
+                      </Link>
+                    </p>
+                  )}
+                  <p className="mt-1 text-foreground/80">Ask: {flag.question}</p>
+                </div>
+                <CopyButton text={flag.question} label="Copy question" />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : (
+        <p className="mt-4 text-sm text-muted-foreground">No integrity flags.</p>
       )}
 
       <section className="mt-6 grid gap-4 md:grid-cols-2">
@@ -116,13 +155,21 @@ export default async function CandidatePage({
                     </p>
                     <span className="text-lg font-semibold tabular-nums">{item.score}/5</span>
                   </div>
-                  <p className="mt-1 text-sm">{item.anchor}</p>
+                  <div className="mt-2">
+                    <ScoreBar score={item.score} label={`${item.criterion} ${criterion?.name ?? ""}`} size="wide" />
+                  </div>
+                  <p className="mt-2 text-sm">{item.anchor}</p>
                   {item.quotes.length > 0 && (
-                    <ul className="mt-2 space-y-1 border-l-2 pl-3 text-sm text-muted-foreground">
-                      {item.quotes.map((quote, index) => (
-                        <li key={index}>“{quote}”</li>
-                      ))}
-                    </ul>
+                    <details className="group mt-2 text-sm">
+                      <summary className="inline-flex min-h-8 cursor-pointer items-center text-muted-foreground hover:text-foreground">
+                        Evidence from the CV ({item.quotes.length})
+                      </summary>
+                      <ul className="mt-1 space-y-1 border-l-2 pl-3 text-foreground/80">
+                        {item.quotes.map((quote, index) => (
+                          <li key={index}>“{quote}”</li>
+                        ))}
+                      </ul>
+                    </details>
                   )}
                 </li>
               );
@@ -151,30 +198,6 @@ export default async function CandidatePage({
         </section>
       )}
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">Integrity flags</h2>
-        {flags.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">None. Flags never change scores.</p>
-        ) : (
-          <ul className="mt-3 space-y-2">
-            {flags.map((flag) => (
-              <li key={flag.id} className="rounded-lg border border-rose-300 p-3 text-sm dark:border-rose-800">
-                <p className="font-medium">{FLAG_TITLE[flag.type]}</p>
-                {flag.relatedName && flag.relatedCandidateId && (
-                  <p className="mt-0.5">
-                    Same CV as{" "}
-                    <Link className="underline" href={`/candidates/${flag.relatedCandidateId}?role=${role}`}>
-                      {flag.relatedName}
-                    </Link>
-                  </p>
-                )}
-                <p className="mt-1 text-muted-foreground">Ask: {flag.question}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
       {score && (
         <DraftPanel
           key={`${role}-${drafts[role]?.id ?? "none"}`}
@@ -183,6 +206,8 @@ export default async function CandidatePage({
           draft={drafts[role]}
           emailMode={mode}
           hasEmail={Boolean(pii?.emails[0])}
+          candidateEmail={pii?.emails[0] ?? null}
+          testInbox={process.env.EMAIL_TEST_TO ?? null}
         />
       )}
     </main>
