@@ -32,8 +32,8 @@ test("filters narrow the list without changing ranks", async ({ page }) => {
 });
 
 test("tapping Kill evidence shows the quote behind it", async ({ page }) => {
-  await page.goto("/?role=pm");
-  await page.locator("table").getByRole("button", { name: "Kill evidence" }).first().click();
+  await page.goto("/?role=pm", { waitUntil: "networkidle" });
+  await page.locator("table").getByRole("button", { name: "Kill evidence", exact: true }).first().click();
   const popup = page.locator('[data-slot="popover-content"]');
   await expect(popup).toBeVisible();
   await expect(popup).toContainText("Kill evidence");
@@ -63,6 +63,63 @@ test("a P3 = 2 candidate shows the 100+-people anchor and its quote", async ({ p
   await expect(p3.locator("ul li").first()).toBeVisible();
 });
 
+test("clicking a column header sorts by it, flips on a second click, and keeps rank numbers", async ({ page }) => {
+  await page.goto("/?role=pm");
+  const header = page.locator("table thead th").filter({ hasText: "P1" });
+  await header.getByRole("link").click();
+  await expect(page).toHaveURL(/sort=c1&dir=desc/);
+  await expect(page.locator("table thead th").filter({ hasText: "P1" })).toHaveAttribute("aria-sort", "descending");
+  const best = page.locator("table tbody tr").first().locator("td:nth-child(3) [role=img]");
+  await expect(best).toHaveAttribute("aria-label", "P1: 5 of 5");
+  const ranks = (await page.locator("table tbody tr td:first-child").allTextContents()).map(Number);
+  expect([...ranks].sort((a, b) => a - b)).toEqual(Array.from({ length: 50 }, (_, i) => i + 1));
+
+  await page.locator("table thead th").filter({ hasText: "P1" }).getByRole("link").click();
+  await expect(page).toHaveURL(/sort=c1&dir=asc/);
+  await expect(page.locator("table tbody tr").first().locator("td:nth-child(3) [role=img]")).toHaveAttribute("aria-label", /P1: [12] of 5/);
+});
+
+test("sorting keeps the active filters", async ({ page }) => {
+  await page.goto("/?role=pm&tier=Shortlist");
+  await page.getByRole("columnheader", { name: /^Total/ }).getByRole("link").click();
+  await expect(page).toHaveURL(/tier=Shortlist/);
+  await expect(page).toHaveURL(/sort=total/);
+});
+
+test("the table header stays visible while the rows scroll", async ({ page }) => {
+  await page.goto("/?role=pm");
+  const container = page.locator('[data-slot="table-container"]');
+  await container.evaluate((el) => (el.scrollTop = el.scrollHeight));
+  const totalHead = page.getByRole("columnheader", { name: /^Total/ });
+  const [head, box] = await Promise.all([totalHead.boundingBox(), container.boundingBox()]);
+  expect(Math.abs((head?.y ?? -999) - (box?.y ?? 0))).toBeLessThan(3);
+  await expect(totalHead).toBeInViewport();
+});
+
+test("rows show at most three insights inline, with the rest behind +N", async ({ page }) => {
+  await page.goto("/?role=pm", { waitUntil: "networkidle" });
+  const rows = page.locator("table tbody tr");
+  for (let i = 0; i < 5; i += 1) {
+    const inline = await rows.nth(i).locator("td:nth-child(10) button").count();
+    expect(inline).toBeLessThanOrEqual(4); // three chips plus the +N button
+  }
+  const more = page.locator("table tbody tr td:nth-child(10)").getByRole("button", { name: /^\d+ more insights/ }).first();
+  await more.click();
+  await expect(page.locator('[data-slot="popover-content"]')).toBeVisible();
+});
+
+test("years are their own column, as product / total", async ({ page }) => {
+  await page.goto("/?role=pm");
+  await expect(page.locator("table tbody tr").first().locator("td:nth-child(9)")).toHaveText(/^\d+\.\d \/ \d+\.\d$/);
+});
+
+test("tier badges are not white-on-amber", async ({ page }) => {
+  await page.goto("/?role=pm&tier=Hold");
+  const badge = page.locator("table tbody tr td:nth-child(8) span").first();
+  const color = await badge.evaluate((el) => getComputedStyle(el).color);
+  expect(color).not.toBe("rgb(255, 255, 255)");
+});
+
 test.describe("phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -70,6 +127,8 @@ test.describe("phone", () => {
     await page.goto("/?role=spm");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+    await expect(page.getByLabel("Sub-scores").first()).toBeVisible();
+    await expect(page.getByLabel("Sub-scores").first().locator("[role=img]")).toHaveCount(5);
     await page.locator("ul li a[href^='/candidates/']").first().click();
     await expect(page.locator("ol > li")).toHaveCount(5);
     const detailOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
