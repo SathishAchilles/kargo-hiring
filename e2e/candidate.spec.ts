@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { signIn } from "./session";
+import { hasData, NEEDS_DATA, signIn } from "./session";
 
-test.beforeEach(async ({ context }) => {
+test.beforeEach(async ({ context, page }) => {
   await signIn(context);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  test.skip(!(await hasData(page)), NEEDS_DATA);
 });
 
 test("the candidate header stays in view while the page scrolls", async ({ page }) => {
@@ -56,4 +57,34 @@ test("the email section states where the email will go", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /^Email · / })).toBeVisible({ timeout: 120_000 });
   await expect(page.getByText(/^Test mode: this goes to .+, not to the candidate$/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Send to test inbox" })).toBeVisible();
+});
+
+test("the candidate page shows a radar of the five sub-scores and a suggested next step", async ({ page }) => {
+  await page.goto("/?role=pm");
+  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  await expect(page.getByRole("img", { name: /^Sub-scores: P1 \d, P2 \d, P3 \d, P4 \d, P5 \d$/ })).toBeVisible();
+  await expect(page.getByText("Suggested next step")).toBeVisible();
+});
+
+test("previous, next and the arrow keys step through the ranking", async ({ page }) => {
+  await page.goto("/?role=pm");
+  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  const nav = page.getByRole("navigation", { name: "Candidates in ranking order" });
+  await expect(nav).toContainText("1 of ");
+  await expect(nav).toHaveAttribute("data-keys", "on");
+  const first = page.url();
+
+  await nav.getByRole("link", { name: /^Next/ }).click();
+  await expect(nav).toContainText("2 of ");
+  expect(page.url()).not.toBe(first);
+
+  await expect(nav).toHaveAttribute("data-keys", "on");
+  await page.keyboard.press("ArrowLeft");
+  await expect(nav).toContainText("1 of ");
+
+  // Typing in a field must not move to another candidate.
+  await expect(nav).toHaveAttribute("data-keys", "on");
+  await page.getByLabel("Name").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(nav).toContainText("1 of ");
 });
