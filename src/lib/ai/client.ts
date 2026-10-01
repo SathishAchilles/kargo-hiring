@@ -112,8 +112,9 @@ export type GatedRequest<Schema extends z.ZodType> = {
 
 // The JSON Schema Gemini is asked to follow. `$schema` is dropped: the API does not take it.
 function jsonSchemaFor(schema: z.ZodType): Record<string, unknown> {
-  const { $schema: _ignored, ...rest } = z.toJSONSchema(schema) as Record<string, unknown>;
-  return rest;
+  const jsonSchema = { ...z.toJSONSchema(schema) } as Record<string, unknown>;
+  delete jsonSchema.$schema;
+  return jsonSchema;
 }
 
 export async function parseGated<Schema extends z.ZodType>(

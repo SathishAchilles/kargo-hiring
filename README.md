@@ -20,7 +20,7 @@ upload CV + role ──▶ extract text ──▶ separate personal details, red
 - **Candidates open in the role they applied for**, and the email is written for that role by default; one link switches the page and email to the other role.
 
 - **AI reads, code scores.** One AI call turns the redacted CV into an evidence record in which every fact carries a verbatim quote; facts whose quote is not in the CV are dropped. The rubric scores are computed in code (`src/lib/scoring/rubric.ts`), so the same evidence always gives the same score and a changed as-of date rescores with no AI call.
-- **Personal details never reach AI.** Name, email, phone, links and education institutions are removed before any AI request, and every request passes a leak gate (`src/lib/pii/gate.ts`) that refuses to send if any stored personal detail is still present. Only `src/lib/ai/client.ts` may call the Anthropic API; a test enforces this.
+- **Personal details never reach AI.** Name, email, phone, links and education institutions are removed before any AI request, and every request passes a leak gate (`src/lib/pii/gate.ts`) that refuses to send if any stored personal detail is still present. Only `src/lib/ai/client.ts` may call the Gemini API; a test enforces this.
 - **Flags never change scores.** Duplicate CVs, unfilled placeholders, profile links in another name, jobs during a full-time degree, and stated-vs-dated experience become verification questions in the brief.
 
 ## Setup
@@ -40,7 +40,7 @@ npm run db:migrate
 |---|---|
 | `DATABASE_URL` | transaction pooler, `postgres://postgres.local:<password>@localhost:6543/postgres` |
 | `DATABASE_MIGRATION_URL` | session pooler, same credentials on `:5432` |
-| `ANTHROPIC_API_KEY` | may also come from your shell environment |
+| `GEMINI_API_KEY` | Google AI Studio key; evidence uses `gemini-3.1-pro-preview`, drafts use `gemini-3.8-flash` (see `src/lib/ai/client.ts`) |
 | `RESEND_API_KEY`, `RESEND_FROM` | Resend key; `onboarding@resend.dev` works in redirect mode |
 | `EMAIL_MODE` | `redirect` (default) or `live` |
 | `EMAIL_TEST_TO` | the inbox that receives every email in redirect mode (for the Resend sandbox sender, your Resend account email) |
