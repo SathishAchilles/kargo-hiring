@@ -15,7 +15,8 @@
     "import:resumes": "tsx --env-file=.env.local scripts/import-resumes.ts",
     "process": "tsx --env-file=.env.local scripts/process-candidate.ts",
     "calibrate": "tsx --env-file=.env.local scripts/calibrate.ts",
-    "reprocess": "tsx --env-file=.env.local scripts/reprocess.ts"
+    "reprocess": "tsx --env-file=.env.local scripts/reprocess.ts",
+    "check:privacy": "tsx --env-file=.env.local scripts/check-privacy.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
