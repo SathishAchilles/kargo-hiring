@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { chipsFor, prioritizeChips, visibleChips, type Chip, type ChipInput } from "@/lib/dashboard/chips";
-import { cohortFor, type CohortRow } from "@/lib/dashboard/cohort";
+import { chipsFor, prioritizeChips, trimChips, visibleChips, type Chip, type ChipInput } from "@/lib/dashboard/chips";
+import { cohortFor, histogram, type CohortRow } from "@/lib/dashboard/cohort";
 import type { SubScore } from "@/lib/types";
 import { evidence, role } from "./helpers/evidence";
 
@@ -107,5 +107,41 @@ describe("chip priority and overflow", () => {
 
   it("hides nothing when everything fits", () => {
     expect(visibleChips([chip("kills", "good")], 3)).toEqual({ shown: [chip("kills", "good")], hidden: [] });
+  });
+});
+
+describe("score histogram", () => {
+  it("buckets totals in tens, with 90–100 as the top bucket", () => {
+    const buckets = histogram([20, 29, 30, 55, 79, 80, 89, 90, 100]);
+    expect(buckets.map((b) => b.count)).toEqual([2, 1, 0, 1, 0, 1, 2, 2]);
+    expect(buckets[0]).toMatchObject({ from: 20, to: 29 });
+    expect(buckets.at(-1)).toMatchObject({ from: 90, to: 100 });
+  });
+
+  it("counts every candidate exactly once, even out-of-range totals", () => {
+    const buckets = histogram([5, 150, 60]);
+    expect(buckets.reduce((sum, b) => sum + b.count, 0)).toBe(3);
+  });
+
+  it("is carried on the cohort", () => {
+    const row = { id: "a", total: 100, tier: "Shortlist" as const, appliedRole: "pm" as const, subScores: [], suggestOther: false, flagTypes: [] };
+    expect(cohortFor([row], "pm").histogram.at(-1)?.count).toBe(1);
+  });
+});
+
+describe("trimChips", () => {
+  const chip = (key: string, evidence: string[]): Chip => ({ key, label: key, tone: "neutral", evidence });
+
+  it("drops the years chip, which has its own column", () => {
+    expect(trimChips([chip("years", ["x"]), chip("kills", ["y"])]).map((c) => c.key)).toEqual(["kills"]);
+  });
+
+  it("caps how many evidence lines and how long each is", () => {
+    const long = "x".repeat(500);
+    const [trimmed] = trimChips([chip("kills", [long, "b", "c", "d", "e", "f"])], 4, 100);
+    expect(trimmed.evidence).toHaveLength(4);
+    expect(trimmed.evidence[0]).toHaveLength(100);
+    expect(trimmed.evidence[0].endsWith("…")).toBe(true);
+    expect(trimmed.evidence[1]).toBe("b");
   });
 });
