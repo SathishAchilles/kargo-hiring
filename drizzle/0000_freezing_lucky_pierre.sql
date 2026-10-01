@@ -1,4 +1,4 @@
-CREATE SCHEMA "kargo_hiring";
+CREATE SCHEMA IF NOT EXISTS "kargo_hiring";
 --> statement-breakpoint
 CREATE TABLE "kargo_hiring"."candidate_pii" (
 	"candidate_id" uuid PRIMARY KEY NOT NULL,
