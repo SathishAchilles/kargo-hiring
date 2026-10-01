@@ -2,8 +2,10 @@ import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { ChipRow } from "@/components/insight-chip";
 import { ScoreBar } from "@/components/score-bar";
+import { ScoreRing } from "@/components/score-ring";
 import { TierBadge } from "@/components/tier-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { visibleChips } from "@/lib/dashboard/chips";
 import type { DashboardRow } from "@/lib/dashboard/queries";
 import { nextDir, type SortDir, type SortKey } from "@/lib/dashboard/sort";
 import { ROLE_LABEL, type RoleKey } from "@/lib/types";
@@ -19,6 +21,23 @@ const EMAIL_LABEL: Record<string, string> = {
 };
 
 type Sort = { key: SortKey; dir: SortDir };
+
+// Top three get a quiet medal tone; the number is still the visible text.
+const MEDAL: Record<number, string> = {
+  1: "bg-amber-100 text-amber-900 ring-amber-300 dark:bg-amber-950 dark:text-amber-200 dark:ring-amber-800",
+  2: "bg-slate-100 text-slate-800 ring-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-600",
+  3: "bg-orange-100 text-orange-900 ring-orange-300 dark:bg-orange-950 dark:text-orange-200 dark:ring-orange-800",
+};
+
+function RankBadge({ rank }: { rank: number }) {
+  return MEDAL[rank] ? (
+    <span className={cn("grid size-6 place-items-center rounded-full text-xs font-semibold tabular-nums ring-1", MEDAL[rank])}>
+      {rank}
+    </span>
+  ) : (
+    <span className="tabular-nums text-muted-foreground">{rank}</span>
+  );
+}
 
 function SortHead({
   label,
@@ -74,7 +93,7 @@ export function RankedTable({
   return (
     <>
       {/* Desktop: a real table whose header stays visible while the 50 rows scroll. */}
-      <Table containerClassName="mt-3 hidden max-h-[75dvh] overflow-y-auto rounded-lg border md:block">
+      <Table containerClassName="mt-3 hidden max-h-[75dvh] overflow-y-auto rounded-xl border bg-card shadow-xs md:block">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <SortHead label="#" full="rank" sortKey="rank" sort={sort} hrefFor={hrefFor} />
@@ -101,9 +120,15 @@ export function RankedTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id} className="align-top">
-              <TableCell className="px-3 py-3 tabular-nums text-muted-foreground">{row.rank}</TableCell>
+          {rows.map((row, index) => (
+            <TableRow
+              key={row.id}
+              className="anim-fade-up align-top transition-colors"
+              style={{ animationDelay: `${Math.min(index, 14) * 25}ms` }}
+            >
+              <TableCell className="px-3 py-3">
+                <RankBadge rank={row.rank} />
+              </TableCell>
               <TableCell className="px-2 py-3 whitespace-normal">
                 <Link href={`/candidates/${row.id}?role=${role}`} className="font-medium hover:underline">
                   {row.name}
@@ -115,9 +140,11 @@ export function RankedTable({
                   <ScoreBar score={item.score} label={item.criterion} />
                 </TableCell>
               ))}
-              <TableCell className="px-2 py-3 text-right">
-                <div className="text-base font-semibold tabular-nums">{row.total}</div>
-                <TierBadge tier={row.tier} />
+              <TableCell className="px-2 py-3">
+                <div className="flex flex-col items-end gap-1">
+                  <ScoreRing total={row.total} tier={row.tier} />
+                  <TierBadge tier={row.tier} />
+                </div>
               </TableCell>
               <TableCell className="px-2 py-3 text-xs whitespace-nowrap text-muted-foreground tabular-nums">
                 <span title="Product years / total years">
@@ -125,7 +152,7 @@ export function RankedTable({
                 </span>
               </TableCell>
               <TableCell className="min-w-64 max-w-lg px-2 py-3 whitespace-normal">
-                <ChipRow chips={row.chips} max={3} />
+                <ChipRow {...visibleChips(row.chips, 3)} />
               </TableCell>
               <TableCell className="px-2 py-3 text-xs whitespace-nowrap">{EMAIL_LABEL[row.emailStatus]}</TableCell>
             </TableRow>
@@ -135,8 +162,12 @@ export function RankedTable({
 
       {/* Phone: one card per candidate, with the five sub-scores in a row. */}
       <ul className="mt-3 space-y-3 md:hidden">
-        {rows.map((row) => (
-          <li key={row.id} className="rounded-lg border p-3">
+        {rows.map((row, index) => (
+          <li
+            key={row.id}
+            className="anim-fade-up rounded-xl border bg-card p-3 shadow-xs"
+            style={{ animationDelay: `${Math.min(index, 8) * 30}ms` }}
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">#{row.rank}</p>
@@ -150,8 +181,8 @@ export function RankedTable({
                   Product {row.productYears.toFixed(1)} yrs · Total {row.totalYears.toFixed(1)} yrs
                 </p>
               </div>
-              <div className="shrink-0 text-right">
-                <div className="text-lg font-semibold tabular-nums">{row.total}</div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <ScoreRing total={row.total} tier={row.tier} size="sm" />
                 <TierBadge tier={row.tier} />
               </div>
             </div>
@@ -164,7 +195,7 @@ export function RankedTable({
               ))}
             </div>
             <div className="mt-3">
-              <ChipRow chips={row.chips} max={3} />
+              <ChipRow {...visibleChips(row.chips, 3)} />
             </div>
           </li>
         ))}

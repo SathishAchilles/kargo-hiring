@@ -31,7 +31,9 @@ export function ScoreBar({
         {SEGMENTS.map((segment) => (
           <span
             key={segment}
+            style={{ animationDelay: `${segment * 45}ms` }}
             className={cn(
+              segment <= score && "anim-bar",
               "rounded-[1px]",
               wide ? "h-2 flex-1" : "h-1 w-2",
               segment <= score ? fill(score) : "bg-muted",
