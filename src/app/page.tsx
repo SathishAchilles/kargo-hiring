@@ -4,16 +4,17 @@ import { AppHeader } from "@/components/app-header";
 import { AutoRefresh } from "@/components/auto-refresh";
 import { CohortPanel, FLAG_LABEL } from "@/components/cohort-panel";
 import { EmptyState } from "@/components/empty-state";
+import { ReviewProgress } from "@/components/review-progress";
 import { ProcessingList } from "@/components/processing-list";
 import { RankedTable } from "@/components/ranked-table";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { UploadDialog } from "@/components/upload-dialog";
-import { loadDashboard, type Filters } from "@/lib/dashboard/queries";
+import { loadDashboard, type DecisionFilter, type Filters } from "@/lib/dashboard/queries";
 import { parseSort, SORT_KEYS } from "@/lib/dashboard/sort";
 import { parseRole } from "@/lib/intake/validate";
 import { RUBRICS } from "@/lib/scoring/rubric";
-import { ROLE_LABEL, TIER_LABEL, TIERS, type FlagType, type RoleKey } from "@/lib/types";
+import { DECISIONS, ROLE_LABEL, TIER_LABEL, TIERS, type FlagType, type RoleKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -31,10 +32,12 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const search = await searchParams;
   const role: RoleKey = parseRole(one(search.role)) ?? "pm";
   const tier = TIERS.find((value) => value === one(search.tier));
+  const decision = ([...DECISIONS, "undecided"] as DecisionFilter[]).find((value) => value === one(search.decision));
   const applied = parseRole(one(search.applied)) ?? undefined;
   const flag = one(search.flag) as FlagType | undefined;
   const filters: Filters = {
     tier,
+    decision,
     applied,
     flag: flag && flag in FLAG_LABEL ? flag : undefined,
     suggest: one(search.suggest) === "1",
@@ -46,6 +49,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // Sorting keeps whatever filters are active.
   const active: Record<string, string | undefined> = {
     tier: filters.tier,
+    decision: filters.decision,
     applied: filters.applied,
     flag: filters.flag,
     suggest: filters.suggest ? "1" : undefined,
@@ -53,9 +57,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   };
   const sortHref = (next: { key: string; dir: string }) =>
     href(role, { ...active, ...(next.key === "rank" && next.dir === "asc" ? {} : { sort: next.key, dir: next.dir }) });
-  const { rows, all, cohort, pending } = await loadDashboard(role, filters);
+  const { rows, all, cohort, progress, pending } = await loadDashboard(role, filters);
   const criteria = RUBRICS[role];
-  const filtered = Boolean(filters.tier || filters.applied || filters.flag || filters.suggest || filters.top);
+  const filtered = Boolean(filters.tier || filters.decision || filters.applied || filters.flag || filters.suggest || filters.top);
   const processing = pending.some((row) => !["failed", "needs_ocr"].includes(row.status));
 
   return (
@@ -100,12 +104,19 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         )
       ) : (
       <div className="flex flex-col">
+      <ReviewProgress
+        progress={progress}
+        active={filters.decision}
+        hrefFor={(next) => href(role, { ...active, decision: next })}
+        className="mt-5 max-md:-order-1"
+      />
+
       <CohortPanel
         cohort={cohort}
         criteria={criteria.map(({ id, name }) => ({ id, name }))}
         role={role}
         hrefFor={(next) => href(role, next)}
-        className="mt-5 max-md:order-6"
+        className="mt-3 max-md:order-6"
       />
 
       <div className="mt-6 space-y-2">

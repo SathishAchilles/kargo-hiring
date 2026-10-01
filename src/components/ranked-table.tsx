@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
+import { DecisionBadge } from "@/components/decision-badge";
 import { ChipRow } from "@/components/insight-chip";
 import { ScoreBar } from "@/components/score-bar";
 import { ScoreRing } from "@/components/score-ring";
@@ -115,6 +116,9 @@ export function RankedTable({
               Insights
             </TableHead>
             <TableHead className="sticky top-0 z-10 bg-muted/95 px-2 text-xs font-medium text-muted-foreground backdrop-blur">
+              Your decision
+            </TableHead>
+            <TableHead className="sticky top-0 z-10 bg-muted/95 px-2 text-xs font-medium text-muted-foreground backdrop-blur">
               Email
             </TableHead>
           </TableRow>
@@ -130,7 +134,7 @@ export function RankedTable({
                 <RankBadge rank={row.rank} />
               </TableCell>
               <TableCell className="px-2 py-3 whitespace-normal">
-                <Link href={`/candidates/${row.id}?role=${role}`} className="font-medium hover:underline">
+                <Link href={`/candidates/${row.id}?from=${role}`} className="font-medium hover:underline">
                   {row.name}
                 </Link>
                 <p className="text-xs text-muted-foreground">Applied {ROLE_LABEL[row.appliedRole]}</p>
@@ -154,6 +158,9 @@ export function RankedTable({
               <TableCell className="min-w-64 max-w-lg px-2 py-3 whitespace-normal">
                 <ChipRow {...visibleChips(row.chips, 3)} />
               </TableCell>
+              <TableCell className="px-2 py-3">
+                <DecisionBadge decision={row.decision} />
+              </TableCell>
               <TableCell className="px-2 py-3 text-xs whitespace-nowrap">{EMAIL_LABEL[row.emailStatus]}</TableCell>
             </TableRow>
           ))}
@@ -172,7 +179,7 @@ export function RankedTable({
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">#{row.rank}</p>
                 <Link
-                  href={`/candidates/${row.id}?role=${role}`}
+                  href={`/candidates/${row.id}?from=${role}`}
                   className="inline-block min-h-6 font-medium break-words hover:underline"
                 >
                   {row.name}
@@ -196,6 +203,9 @@ export function RankedTable({
             </div>
             <div className="mt-3">
               <ChipRow {...visibleChips(row.chips, 3)} />
+            </div>
+            <div className="mt-3 border-t pt-2">
+              <DecisionBadge decision={row.decision} />
             </div>
           </li>
         ))}
