@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { hasData, NEEDS_DATA, signIn } from "./session";
+import { APPLIED_PM, hasData, NEEDS_DATA, signIn } from "./session";
 
 test.beforeEach(async ({ context, page }) => {
   await signIn(context);
@@ -9,7 +9,7 @@ test.beforeEach(async ({ context, page }) => {
 
 test("the candidate header stays in view while the page scrolls", async ({ page }) => {
   await page.goto("/?role=pm");
-  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  await page.locator("table tbody tr").filter({ hasText: APPLIED_PM }).first().locator("td:nth-child(2) a").click();
   await expect(page.getByRole("heading", { name: /^Why \d+ for PM$/ })).toBeVisible();
   const name = page.locator("header h1");
   await page.mouse.wheel(0, 1500);
@@ -42,7 +42,7 @@ test("a candidate without flags says so instead of showing a banner", async ({ p
 
 test("sub-scores show a bar, the weight and the rule that was met", async ({ page }) => {
   await page.goto("/?role=pm");
-  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  await page.locator("table tbody tr").filter({ hasText: APPLIED_PM }).first().locator("td:nth-child(2) a").click();
   const rows = page.locator("ol > li");
   await expect(rows).toHaveCount(5);
   await expect(rows.first().locator("[role=img]")).toHaveAttribute("aria-label", /^P1 Ground-level ops immersion: \d of 5$/);
@@ -52,23 +52,23 @@ test("sub-scores show a bar, the weight and the rule that was met", async ({ pag
 test("the email section states where the email will go", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto("/?role=pm");
-  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  await page.locator("table tbody tr").filter({ hasText: APPLIED_PM }).first().locator("td:nth-child(2) a").click();
   // The brief and draft are generated the first time a role is opened, so allow for that.
   await expect(page.getByRole("heading", { name: /^Email · / })).toBeVisible({ timeout: 120_000 });
   await expect(page.getByText(/^Test mode: this goes to .+, not to the candidate$/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Send to test inbox" })).toBeVisible();
 });
 
-test("the candidate page shows a radar of the five sub-scores and a suggested next step", async ({ page }) => {
+test("the candidate page shows a radar of the five sub-scores and an AI recommendation", async ({ page }) => {
   await page.goto("/?role=pm");
-  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  await page.locator("table tbody tr").filter({ hasText: APPLIED_PM }).first().locator("td:nth-child(2) a").click();
   await expect(page.getByRole("img", { name: /^Sub-scores: P1 \d, P2 \d, P3 \d, P4 \d, P5 \d$/ })).toBeVisible();
-  await expect(page.getByText("Suggested next step")).toBeVisible();
+  await expect(page.getByText("AI recommendation")).toBeVisible();
 });
 
 test("previous, next and the arrow keys step through the ranking", async ({ page }) => {
   await page.goto("/?role=pm");
-  await page.locator("table tbody tr").first().locator("td:nth-child(2) a").click();
+  await page.locator("table tbody tr").filter({ hasText: APPLIED_PM }).first().locator("td:nth-child(2) a").click();
   const nav = page.getByRole("navigation", { name: "Candidates in ranking order" });
   await expect(nav).toContainText("1 of ");
   await expect(nav).toHaveAttribute("data-keys", "on");
