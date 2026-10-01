@@ -1,0 +1,1 @@
+ALTER TABLE "kargo_hiring"."candidates" ADD COLUMN "failed_step" text;
