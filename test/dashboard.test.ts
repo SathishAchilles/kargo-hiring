@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chipsFor, type ChipInput } from "@/lib/dashboard/chips";
+import { chipsFor, prioritizeChips, visibleChips, type Chip, type ChipInput } from "@/lib/dashboard/chips";
 import { cohortFor, type CohortRow } from "@/lib/dashboard/cohort";
 import type { SubScore } from "@/lib/types";
 import { evidence, role } from "./helpers/evidence";
@@ -88,5 +88,24 @@ describe("cohort panel", () => {
     expect(cohort.averageApplicants).toBe(100);
     expect(cohort.suggestOther).toBe(1);
     expect(cohort.flags).toEqual({ duplicate: 1 });
+  });
+});
+
+describe("chip priority and overflow", () => {
+  const chip = (key: string, tone: Chip["tone"]): Chip => ({ key, label: key, tone, evidence: [] });
+  const chips = [chip("years", "neutral"), chip("kills", "good"), chip("ops", "good"), chip("tie", "neutral"), chip("flags", "bad"), chip("suggest", "warn")];
+
+  it("puts problems first, then cautions, strengths and context", () => {
+    expect(prioritizeChips(chips).map((c) => c.key)).toEqual(["flags", "suggest", "kills", "ops", "years", "tie"]);
+  });
+
+  it("drops the years chip and moves the overflow into hidden", () => {
+    const { shown, hidden } = visibleChips(chips, 3);
+    expect(shown.map((c) => c.key)).toEqual(["flags", "suggest", "kills"]);
+    expect(hidden.map((c) => c.key)).toEqual(["ops", "tie"]);
+  });
+
+  it("hides nothing when everything fits", () => {
+    expect(visibleChips([chip("kills", "good")], 3)).toEqual({ shown: [chip("kills", "good")], hidden: [] });
   });
 });
