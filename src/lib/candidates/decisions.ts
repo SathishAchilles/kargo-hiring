@@ -15,11 +15,10 @@ export async function getDecision(candidateId: string, role: RoleKey): Promise<D
   return row ?? null;
 }
 
-// Records (or changes) the founder's decision. The latest decision wins; clearing returns the
-// candidate to "not decided".
+// Records (or changes) the founder's decision. The latest decision wins. A note of undefined keeps
+// the stored note (the list buttons never touch it); a string, even empty, replaces it.
 export async function setDecision(candidateId: string, role: RoleKey, decision: Decision, note?: string | null) {
-  const trimmed = note?.trim().slice(0, MAX_NOTE) || null;
-  const values = { decision, note: trimmed, decidedAt: new Date() };
+  const values = { decision, decidedAt: new Date(), ...(note === undefined ? {} : { note: note?.trim().slice(0, MAX_NOTE) || null }) };
   await db
     .insert(decisions)
     .values({ candidateId, role, ...values })
