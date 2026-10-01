@@ -68,6 +68,18 @@ export async function ensureDraft(
   return row;
 }
 
+// After the founder decides, an unedited, unsent draft of the wrong kind is redrafted to match.
+// An edited draft is left alone: the founder's own words are never overwritten silently.
+export async function alignDraftWithDecision(candidateId: string, role: RoleKey): Promise<boolean> {
+  const decision = await getDecision(candidateId, role);
+  const wanted = kindFor(decision?.decision ?? null);
+  const existing = await latestDraft(candidateId, role);
+  if (!wanted || !existing || existing.kind === wanted) return false;
+  if (existing.status === "sent" || existing.status === "sending" || existing.editedByFounder) return false;
+  await ensureDraft(candidateId, role, { kind: wanted, force: true });
+  return true;
+}
+
 export async function editDraft(id: string, input: { subject: string; body: string }) {
   const [row] = await db
     .update(drafts)

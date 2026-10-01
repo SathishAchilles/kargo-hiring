@@ -4,7 +4,7 @@ import { db } from "@/db/client";
 import { candidatePii, drafts } from "@/db/schema";
 import { updateCandidateSettings } from "@/lib/candidates/service";
 import { clearDecision, getDecision, setDecision } from "@/lib/candidates/decisions";
-import { editDraft, ensureDraft, sendDraft } from "@/lib/drafts/service";
+import { alignDraftWithDecision, editDraft, ensureDraft, sendDraft } from "@/lib/drafts/service";
 import { setParseForTests } from "@/lib/ai/client";
 import { setSenderForTests, type Sender } from "@/lib/email/send";
 import { cleanup, scoredCandidate } from "./helpers/db";
@@ -152,5 +152,33 @@ describe("the human decision gates sending", () => {
     await setDecision(id, "pm", "declined");
     const draft = await ensureDraft(id, "pm");
     expect(draft.kind).toBe("rejection");
+  });
+
+  it("redrafts an untouched wrong-kind draft after the decision, but never an edited one", async () => {
+    setParseForTests((async () => ({
+      stop_reason: "end_turn",
+      parsed_output: {
+        summary: "s",
+        probes: [{ criterion: "P1", question: "q" }],
+        subject: "Kargo",
+        body: "Hi {{first_name}},\n\nYour exception alerts stood out.",
+        referencedFactIds: ["F2"],
+      },
+    })) as never);
+    const untouched = await scoredCandidate("2025-02-01");
+    const first = await insertDraft(untouched); // an invite
+    await setDecision(untouched, "pm", "declined");
+    expect(await alignDraftWithDecision(untouched, "pm")).toBe(true);
+    const [now] = await db.select().from(drafts).where(eq(drafts.candidateId, untouched));
+    expect(now.kind).toBe("rejection");
+    expect(now.id).not.toBe(first.id);
+
+    const edited = await scoredCandidate("2025-03-01");
+    const mine = await insertDraft(edited);
+    await editDraft(mine.id, { subject: "Mine", body: "My own words" });
+    await setDecision(edited, "pm", "declined");
+    expect(await alignDraftWithDecision(edited, "pm")).toBe(false);
+    const [kept] = await db.select().from(drafts).where(eq(drafts.candidateId, edited));
+    expect(kept.body).toBe("My own words");
   });
 });
