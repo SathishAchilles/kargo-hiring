@@ -25,10 +25,10 @@ test("both tabs list every scored candidate, each in its own order", async ({ pa
 test("filters narrow the list without changing ranks", async ({ page }) => {
   await page.goto("/?role=pm");
   const firstRank = await page.locator("table tbody tr").first().locator("td").first().textContent();
-  await page.goto("/?role=pm&tier=Shortlist&applied=pm");
+  await page.goto("/?role=pm&tier=Strong&applied=pm");
   const tiers = await page.locator("table tbody tr td:nth-child(8) span").allTextContents();
   expect(tiers.length).toBeGreaterThan(0);
-  expect(new Set(tiers)).toEqual(new Set(["Shortlist"]));
+  expect(new Set(tiers)).toEqual(new Set(["Strong match"]));
   expect(await page.locator("table tbody tr").first().locator("td").first().textContent()).toBe(firstRank);
 });
 
@@ -86,9 +86,9 @@ test("clicking a column header sorts by it, flips on a second click, and keeps r
 });
 
 test("sorting keeps the active filters", async ({ page }) => {
-  await page.goto("/?role=pm&tier=Shortlist");
+  await page.goto("/?role=pm&tier=Strong");
   await page.getByRole("columnheader", { name: /^Total/ }).getByRole("link").click();
-  await expect(page).toHaveURL(/tier=Shortlist/);
+  await expect(page).toHaveURL(/tier=Strong/);
   await expect(page).toHaveURL(/sort=total/);
 });
 
@@ -120,7 +120,7 @@ test("years are their own column, as product / total", async ({ page }) => {
 });
 
 test("tier badges are not white-on-amber", async ({ page }) => {
-  await page.goto("/?role=pm&tier=Hold");
+  await page.goto("/?role=pm&tier=Partial");
   const badge = page.locator("table tbody tr td:nth-child(8) span").first();
   const color = await badge.evaluate((el) => getComputedStyle(el).color);
   expect(color).not.toBe("rgb(255, 255, 255)");
@@ -128,11 +128,11 @@ test("tier badges are not white-on-amber", async ({ page }) => {
 
 test("tier quick filters sit above the list and toggle on and off", async ({ page }) => {
   await page.goto("/?role=pm", { waitUntil: "networkidle" });
-  const shortlist = page.getByRole("link", { name: /^Shortlist \d+$/ });
+  const shortlist = page.getByRole("link", { name: /^Strong match \d+$/ });
   await shortlist.click();
-  await expect(page).toHaveURL(/tier=Shortlist/);
-  await expect(page.getByRole("link", { name: /^Shortlist \d+$/ })).toHaveAttribute("aria-current", "true");
-  await page.getByRole("link", { name: /^Shortlist \d+$/ }).click();
+  await expect(page).toHaveURL(/tier=Strong/);
+  await expect(page.getByRole("link", { name: /^Strong match \d+$/ })).toHaveAttribute("aria-current", "true");
+  await page.getByRole("link", { name: /^Strong match \d+$/ }).click();
   await expect(page).not.toHaveURL(/tier=/);
 });
 

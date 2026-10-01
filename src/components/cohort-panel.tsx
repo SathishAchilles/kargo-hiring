@@ -1,18 +1,16 @@
 import { Trophy, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import type { Cohort } from "@/lib/dashboard/cohort";
-import { ROLE_LABEL, type FlagType, type RoleKey, type Tier } from "@/lib/types";
+import { ROLE_LABEL, TIER_LABEL, TIERS, type FlagType, type RoleKey, type Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-const TIERS: Tier[] = ["Shortlist", "Interview", "Hold", "Decline"];
 
 // Segment colours for the stacked bar. The legend beside it carries the names and counts,
 // so the bar never relies on colour alone.
 const TIER_FILL: Record<Tier, string> = {
-  Shortlist: "bg-emerald-500",
-  Interview: "bg-sky-500",
-  Hold: "bg-amber-400",
-  Decline: "bg-slate-300 dark:bg-slate-600",
+  Strong: "bg-emerald-500",
+  Good: "bg-sky-500",
+  Partial: "bg-amber-400",
+  Weak: "bg-slate-300 dark:bg-slate-600",
 };
 
 export const FLAG_LABEL: Record<FlagType, string> = {
@@ -50,7 +48,7 @@ export function CohortPanel({
 
   return (
     <section aria-label="Cohort insights" className={cn("grid gap-3 sm:grid-cols-2 lg:grid-cols-4", className)}>
-      <Card title="Tiers">
+      <Card title="AI recommendation">
         <div aria-hidden className="mt-3 flex h-2 overflow-hidden rounded-full bg-muted">
           {TIERS.map((tier) => (
             <span
@@ -66,7 +64,7 @@ export function CohortPanel({
               <span className="flex items-center gap-2">
                 <span aria-hidden className={cn("size-2 rounded-full", TIER_FILL[value])} />
                 <Link className="hover:underline" href={hrefFor({ tier: value })}>
-                  {value}
+                  {TIER_LABEL[value]}
                 </Link>
               </span>
               <span className="tabular-nums">{cohort.tiers[value]}</span>

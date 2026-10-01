@@ -4,7 +4,7 @@ import { db } from "@/db/client";
 import { candidatePii, candidates, drafts, evidence, flags, scores } from "@/db/schema";
 import { verificationQuestion } from "@/lib/drafts/brief";
 import { rank } from "@/lib/scoring/rank";
-import { isMumbai } from "@/lib/scoring/score";
+import { isMumbai, tierFor } from "@/lib/scoring/score";
 import type { DraftStatus, FlagType, RoleKey, Tier } from "@/lib/types";
 import { chipsFor, trimChips, type Chip } from "./chips";
 import { parseSort, sortRows, type SortDir, type SortKey } from "./sort";
@@ -81,7 +81,7 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
       name: row.name,
       appliedRole: row.appliedRole,
       total: row.score.total,
-      tier: row.score.tier,
+      tier: tierFor(row.score.total),
       subScores: row.score.subScores.map((item) => ({ criterion: item.criterion, score: item.score })),
       productYears: row.score.productYears,
       totalYears: row.score.totalYears,
@@ -108,7 +108,7 @@ export async function loadDashboard(role: RoleKey, filters: Filters = {}): Promi
     ranked.map((row) => ({
       id: row.id,
       total: row.score.total,
-      tier: row.score.tier,
+      tier: tierFor(row.score.total),
       appliedRole: row.appliedRole,
       subScores: row.score.subScores,
       suggestOther: row.score.suggestOther,

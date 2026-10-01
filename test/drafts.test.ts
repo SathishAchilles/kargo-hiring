@@ -42,11 +42,11 @@ function aiReturns(body: string, extra: Record<string, unknown> = {}) {
 }
 
 describe("defaultKind", () => {
-  it("invites Shortlist and Interview, rejects Hold and Decline", () => {
-    expect(defaultKind("Shortlist")).toBe("invite");
-    expect(defaultKind("Interview")).toBe("invite");
-    expect(defaultKind("Hold")).toBe("rejection");
-    expect(defaultKind("Decline")).toBe("rejection");
+  it("recommends an invite for Strong and Good, a rejection for Partial and Weak", () => {
+    expect(defaultKind("Strong")).toBe("invite");
+    expect(defaultKind("Good")).toBe("invite");
+    expect(defaultKind("Partial")).toBe("rejection");
+    expect(defaultKind("Weak")).toBe("rejection");
   });
 });
 

@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 // A total (20–100) as a progress ring in the tier's colour. The number is real text inside
 // the ring, so the ring is decoration and nothing depends on colour.
 const TIER_COLOUR: Record<Tier, string> = {
-  Shortlist: "oklch(0.7 0.17 160)",
-  Interview: "oklch(0.68 0.14 235)",
-  Hold: "oklch(0.78 0.15 80)",
-  Decline: "oklch(0.7 0.02 264)",
+  Strong: "oklch(0.7 0.17 160)",
+  Good: "oklch(0.68 0.14 235)",
+  Partial: "oklch(0.78 0.15 80)",
+  Weak: "oklch(0.7 0.02 264)",
 };
 
 export function ScoreRing({ total, tier, size = "md" }: { total: number; tier: Tier; size?: "md" | "sm" }) {

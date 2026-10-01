@@ -149,11 +149,11 @@ describe("Senior PM rubric", () => {
 });
 
 describe("tiers and routing", () => {
-  it("maps 80 to Shortlist and 79 to Interview", () => {
-    expect(tierFor(80)).toBe("Shortlist");
-    expect(tierFor(79)).toBe("Interview");
-    expect(tierFor(50)).toBe("Hold");
-    expect(tierFor(49)).toBe("Decline");
+  it("maps 80 to Strong and 79 to Good", () => {
+    expect(tierFor(80)).toBe("Strong");
+    expect(tierFor(79)).toBe("Good");
+    expect(tierFor(50)).toBe("Partial");
+    expect(tierFor(49)).toBe("Weak");
   });
 
   it("does not mark a Senior PM applicant with 4.0 product years", () => {
