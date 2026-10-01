@@ -11,7 +11,8 @@
     "e2e": "playwright test",
     "db:generate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
-    "hash-passcode": "tsx scripts/hash-passcode.ts"
+    "hash-passcode": "tsx scripts/hash-passcode.ts",
+    "import:resumes": "tsx --env-file=.env.local scripts/import-resumes.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
