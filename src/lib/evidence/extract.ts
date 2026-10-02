@@ -6,7 +6,7 @@ import { verifyEvidence, type Verified } from "./verify";
 import { toEvidence, wireSchema } from "./wire";
 
 export function evidenceInputHash(redactedText: string): string {
-  return createHash("sha256").update(`${EVIDENCE_PROMPT_VERSION}\n${redactedText}`).digest("hex");
+  return createHash("sha256").update(`${EVIDENCE_PROMPT_VERSION}\n${EVIDENCE_MODEL}\n${redactedText}`).digest("hex");
 }
 
 export async function extractEvidence(redactedText: string, pii: Pii): Promise<Verified> {
@@ -27,7 +27,7 @@ export type EvidenceCache = {
   put(inputHash: string, value: Verified): Promise<void>;
 };
 
-// Same redacted text and prompt version → stored evidence, no AI call.
+// Same redacted text, prompt version and model → stored evidence, no AI call.
 export async function evidenceWithCache(
   redactedText: string,
   pii: Pii,
